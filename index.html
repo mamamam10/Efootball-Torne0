@@ -8,488 +8,115 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0c0d;
-            --card-bg: #111315;
-            --input-bg: #1f2226;
-            --primary-neon: #00ff87;
-            --accent-yellow: #ffb703;
-            --text-main: #ffffff;
-            --text-muted: #8a8d91;
-            --border-color: #222529;
-            --danger-color: #ff4d4d;
+            --bg-color: #0b0c0d; --card-bg: #111315; --input-bg: #1f2226;
+            --primary-neon: #00ff87; --accent-yellow: #ffb703;
+            --text-main: #ffffff; --text-muted: #8a8d91;
+            --border-color: #222529; --danger-color: #ff4d4d;
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Admin lock discreto abajo */
-        .admin-footer-trigger {
-            margin-top: 40px;
-            background: none;
-            border: none;
-            color: #222;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .header-container {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .header-container h1 {
-            font-size: 2.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            font-weight: 900;
-        }
-
-        .header-container h1 span {
-            color: var(--primary-neon);
-        }
-
-        .description-sub {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-top: 8px;
-            border: none;
-            background: transparent;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .description-sub:focus {
-            outline: 1px dashed var(--primary-neon);
-            color: #fff;
-        }
-
-        .main-container {
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .selector-wrapper {
-            position: relative;
-            flex-grow: 1;
-        }
-
-        .selector-torneo {
-            width: 100%;
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            appearance: none;
-            font-weight: bold;
-        }
-
-        .btn {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Montserrat', sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .admin-footer-trigger { margin-top: 40px; background: none; border: none; color: #222; cursor: pointer; font-size: 0.8rem; }
+        .header-container { text-align: center; margin-bottom: 20px; width: 100%; max-width: 900px; }
+        .header-container h1 { font-size: 2.8rem; text-transform: uppercase; margin: 0; font-weight: 900; }
+        .header-container h1 span { color: var(--primary-neon); }
+        .description-sub { color: var(--text-muted); font-size: 0.95rem; margin-top: 8px; border: none; background: transparent; text-align: center; width: 100%; }
+        .main-container { width: 100%; max-width: 900px; }
+        .top-bar { display: flex; align-items: center; margin-bottom: 20px; gap: 10px; }
+        .selector-torneo { width: 100%; background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn { background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-primary { background-color: var(--primary-neon); color: #000; border: none; }
         .btn-edit { background-color: #24282c; color: var(--accent-yellow); border: 1px solid var(--border-color); }
-
-        /* Pestañas deslizables para celular */
-        .tabs-menu {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            width: 100%;
-            padding-bottom: 5px;
-        }
-
-        .tabs-menu::-webkit-scrollbar { height: 4px; }
-        .tabs-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-
-        .tab-btn {
-            background-color: var(--card-bg);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background-color: var(--primary-neon);
-            color: #000;
-            border-color: var(--primary-neon);
-        }
-
+        .tabs-menu { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; width: 100%; padding-bottom: 5px; }
+        .tab-btn { background-color: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
+        .tab-btn.active { background-color: var(--primary-neon); color: #000; border-color: var(--primary-neon); }
         .tab-content { display: none; width: 100%; }
         .tab-content.active { display: block; }
-
-        /* Tablas */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        th {
-            background-color: #0f1112;
-            color: var(--text-muted);
-            text-align: left;
-            padding: 12px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-        }
-
+        table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); border-radius: 8px; overflow: hidden; }
+        th { background-color: #0f1112; color: var(--text-muted); padding: 12px; font-size: 0.75rem; text-transform: uppercase; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
-
-        .pos-num {
-            background-color: #1f2226;
-            padding: 3px 7px;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        tr:nth-child(1) .pos-num { background-color: var(--accent-yellow); color: #000; }
-        tr:nth-child(2) .pos-num { background-color: #c0c0c0; color: #000; }
-        tr:nth-child(3) .pos-num { background-color: #cd7f32; color: #000; }
-        .pts-col { color: var(--primary-neon); font-weight: bold; }
-
-        /* Fixture y H2H */
-        .fecha-contenedor { margin-bottom: 25px; }
-        .fecha-titulo {
-            color: var(--primary-neon);
-            font-size: 1rem;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-            margin-bottom: 12px;
-        }
-
-        .partido-card {
-            background-color: var(--card-bg);
-            border-radius: 6px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .team-name { font-weight: bold; width: 35%; overflow: hidden; text-overflow: ellipsis; }
-        .team-home { text-align: right; }
-        .team-away { text-align: left; }
-
-        .score-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            justify-content: center;
-            width: 30%;
-        }
-
-        .score-input {
-            width: 38px;
-            background-color: var(--input-bg);
-            color: #fff;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            padding: 6px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .score-input:disabled { background: transparent; border-color: transparent; }
-
-        .btn-h2h {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 2px;
-            color: var(--text-muted);
-        }
-
-        /* Bracket de Copa Visual */
-        .bracket-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-        .bracket-fase {
-            border-left: 3px solid var(--accent-yellow);
-            padding-left: 10px;
-            margin-bottom: 10px;
-        }
-        .bracket-fase-titulo {
-            color: var(--accent-yellow);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        /* Perfiles y Vitrina */
-        .perfiles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .perfil-card-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            text-align: center;
-        }
-        .perfil-card-btn.active { border-color: var(--primary-neon); background: #16221c; }
-
-        .career-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .vitrina { display: flex; gap: 15px; margin-top: 10px; overflow-x: auto; padding: 5px 0; }
-        .trofeo-item {
-            background: var(--input-bg);
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            min-width: 90px;
-            font-size: 0.75rem;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Modales */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.85);
-            justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 440px;
-            border: 1px solid var(--border-color);
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; }
-        .form-control { width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--border-color); padding: 8px; border-radius: 4px; box-sizing: border-box; }
-
-        .pari-gaga { color: var(--danger-color); font-style: italic; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
         <h1>Liga <span>Efootball</span></h1>
-        <input type="text" id="ligaDescripcionInput" class="description-sub" value="Torneo Competitivo Oficial de Amigos" readonly onblur="guardarDescripcionNube()">
+        <input type="text" id="ligaDescripcionInput" class="description-sub" readonly onblur="guardarDescripcionNube()">
     </div>
 
     <div class="main-container">
         <div class="top-bar">
-            <div class="selector-wrapper">
-                <select class="selector-torneo" id="ligaSelector" onchange="cambiarLigaActiva()"></select>
-            </div>
+            <select class="selector-torneo" id="ligaSelector" onchange="cambiarLigaActiva()"></select>
             <button class="btn btn-edit admin-only" id="btnEditarLigaNombre" style="display:none;" onclick="renombrarLigaActual()">✏️</button>
-            <button class="btn btn-primary admin-only" id="btnNuevaLiga" style="display:none;" onclick="abrirModalNuevaLiga()">➕ Nueva liga</button>
+            <button class="btn btn-primary admin-only" id="btnNuevaLiga" style="display:none;" onclick="abrirModalNuevaLiga()">➕ Nueva</button>
         </div>
 
         <div class="tabs-menu">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-tabla')">📊 Tabla</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-fixture')">🗓️ Fixture</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-copa')">🏆 Copa</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-premios')">💰 Premios</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-premios-ind')">⭐ Premios Ind.</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-perfiles')">👤 Perfiles</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'tab-tabla')">📊 TABLA</button>
+            <button class="tab-btn" onclick="switchTab(event, 'tab-fixture')">🗓️ FIXTURE</button>
         </div>
 
         <div id="tab-tabla" class="tab-content active">
             <table>
-                <thead>
-                    <tr><th>Pos</th><th>Jugador</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr>
-                </thead>
+                <thead><tr><th>Pos</th><th>Jugador</th><th>PJ</th><th>Pts</th></tr></thead>
                 <tbody id="tabla-body"></tbody>
             </table>
         </div>
-
-        <div id="tab-fixture" class="tab-content">
-            <div id="fixture-container"></div>
-        </div>
-
-        <div id="tab-copa" class="tab-content">
-            <div class="bracket-container" id="copa-bracket-container"></div>
-        </div>
-
-        <div id="tab-premios" class="tab-content">
-            <div class="career-box">
-                <h3 style="color:var(--accent-yellow); margin-top:0;" id="txtTipoTorneo">POZO DEL TORNEO</h3>
-                <p id="txtPozoTotal" style="font-size:1.4rem; font-weight:bold; margin: 5px 0;"></p>
-                <div id="desglose-premios-lista" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-        </div>
-
-        <div id="tab-premios-ind" class="tab-content">
-            <div class="career-box">
-                <h3 style="color:var(--primary-neon); margin-top:0;">👑 Premios de la Fase Regular</h3>
-                <p>⚽ <b>Goleador:</b> <span id="ind-goleador">-</span></p>
-                <p>🛡️ <b>Más Sólido:</b> <span id="ind-solido">-</span></p>
-                <p>🚀 <b>Más Efectivo (DG):</b> <span id="ind-efectivo">-</span></p>
-                <p>💎 <b>MVP de la Liga:</b> <span id="ind-mvp">-</span></p>
-            </div>
-            <div class="career-box">
-                <h3 style="color:var(--accent-yellow); margin-top:0;">🔥 Folclore General (Fase Regular + Copa)</h3>
-                <p>🥶 <b>Decepción (Último):</b> <span id="ind-decepcion">-</span></p>
-                <p>🎭 <b>Revelación:</b> <span id="ind-revelacion">-</span></p>
-                <p>🤪 <b>El más Gagá:</b> <span id="ind-gaga">-</span> <span id="ind-gaga-partido" class="pari-gaga"></span></p>
-            </div>
-        </div>
-
-        <div id="tab-perfiles" class="tab-content">
-            <div class="perfiles-grid" id="perfiles-botones-grid"></div>
-            <div class="career-box" id="perfil-detalle-box" style="display:none;">
-                <h2 id="perf-nombre" style="margin-top:0; color:var(--primary-neon);"></h2>
-                <p>💰 <b>Dinero Total Ganado:</b> <span id="perf-guita" style="color:var(--accent-yellow); font-weight:bold;">$0</span></p>
-                
-                <h4 style="margin-bottom:5px; text-transform:uppercase; color:var(--text-muted);">Vitrina de Trofeos</h4>
-                <div class="vitrina" id="perf-vitrina"></div>
-
-                <h4 style="margin-bottom:5px; text-transform:uppercase; color:var(--text-muted); margin-top:20px;">Datos de la Carrera</h4>
-                <p>📊 Partidos Jugados: <span id="perf-pj">0</span> | Goles Metidos: <span id="perf-gf">0</span></p>
-                <p>🟢 Mejor Victoria: <span id="perf-best">-</span></p>
-                <p>🔴 Peor Derrota: <span id="perf-worst">-</span></p>
-                <p>🦖 <b>Paternidades (H2H Global):</b> <span id="perf-paternidad">-</span></p>
-            </div>
-        </div>
+        <div id="tab-fixture" class="tab-content"><div id="fixture-container"></div></div>
     </div>
-
-    <div class="modal" id="modalNuevaLiga">
-        <div class="modal-content">
-            <h3 style="color:var(--primary-neon); margin-top:0;">➕ Crear Nueva Liga</h3>
-            <div class="form-group">
-                <label>Nombre del Torneo</label>
-                <input type="text" id="nlNombre" class="form-control" value="Liga 2">
-            </div>
-            <div class="form-group">
-                <label>Monto de Inscripción por Persona ($0 = Amistoso)</label>
-                <input type="number" id="nlInscripcion" class="form-control" value="2000">
-            </div>
-            <div class="form-group">
-                <label>Cantidad de Jugadores</label>
-                <select id="nlCantidad" class="form-control" onchange="renderCasillerosNombres()">
-                    <option value="4">4 Jugadores</option>
-                    <option value="5">5 Jugadores</option>
-                    <option value="6" selected>6 Jugadores</option>
-                    <option value="7">7 Jugadores</option>
-                    <option value="8">8 Jugadores</option>
-                    <option value="9">9 Jugadores</option>
-                    <option value="10">10 Jugadores</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label style="margin-bottom:8px; display:block; font-weight:bold;">Editar Nombres de Participantes:</label>
-                <div id="casilleros-nombres-dinamicos" style="display:flex; flex-direction:column; gap:6px;"></div>
-            </div>
-            <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button class="btn" onclick="cerrarModal('modalNuevaLiga')">Cancelar</button>
-                <button class="btn btn-primary" onclick="procesarCreacionLiga()">🚀 Generar Fechas Aleatorias</button>
-            </div>
-        </div>
-    </div>
-
-    <button class="admin-footer-trigger" onclick="pedirAccesoAdmin()">.</button>
 
     <script>
-        // CONFIGURACIÓN REAL DE TU SUPABASE INYECTADA COMPLETAMENTE
         const SUPABASE_URL = "https://zmzztkbndsuasfiuhepw.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_pijw_DnJiHSxvAvAc-HLFQ_G5Y5h3AI";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Nombres fijos originales
-        const NOMBRES_ORIGINALES = ["Diego", "Nazario", "Ezequiel", "Matías", "Joseph", "Pablo"];
-        
         let isAdmin = false;
         let ligasCached = [];
         let ligaActivaId = null;
-        let partidosCached = [];
-        let copaCached = [];
-        let statsRegular = {};
-        let todasLigasPartidosGlobal = []; 
-        let todasLigasConfigGlobal = [];
-
-        // Inicializar al cargar
-        init();
 
         async function init() {
-            await cargarLigasDeNube();
-            renderCasillerosNombres();
-        }
-
-        function pedirAccesoAdmin() {
-            let p = prompt("Clave:");
-            if(p === "1234") {
-                isAdmin = true;
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'inline-flex');
-                document.getElementById('ligaDescripcionInput').removeAttribute('readonly');
-                procesarEstadisticasYVistas();
+            try {
+                await cargarLigasDeNube();
+            } catch (err) {
+                console.error("Error inicial:", err);
             }
         }
 
-        function renderCasillerosNombres() {
-            let cant = parseInt(document.getElementById('nlCantidad').value);
-            let container = document.getElementById('casilleros-nombres-dinamicos');
-            container.innerHTML = '';
-            for(let i = 0; i < cant; i++) {
-                let defaultName = NOMBRES_ORIGINALES[i] ? NOMBRES_ORIGINALES[i] : "";
-                container.innerHTML += `<input type="text" class="form-control nl-player-input" placeholder="Jugador ${i+1}" value="${defaultName}">`;
-            }
+        async function cargarLigasDeNube() {
+            const { data: lg, error } = await _supabase.from('ligas').select('*').order('id', { ascending: true });
+            if (error || !lg || lg.length === 0) return;
+
+            ligasCached = lg;
+            const sel = document.getElementById('ligaSelector');
+            sel.innerHTML = lg.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
+            
+            ligaActivaId = lg[lg.length - 1].id;
+            sel.value = ligaActivaId;
+            cambiarLigaActiva();
         }
 
-        // Sistema para cambiar entre pestañas del Menú
+        async function cambiarLigaActiva() {
+            ligaActivaId = document.getElementById('ligaSelector').value;
+            const { data: partidos } = await _supabase.from('resultados_partidos').select('*').eq('liga_id', ligaActivaId);
+            renderTabla(partidos || []);
+        }
+
+        function renderTabla(partidos) {
+            const stats = {};
+            partidos.forEach(p => {
+                if (!stats[p.local]) stats[p.local] = { pts: 0, pj: 0 };
+                if (!stats[p.visitante]) stats[p.visitante] = { pts: 0, pj: 0 };
+                if (p.gl !== null && p.gv !== null) {
+                    stats[p.local].pj++; stats[p.visitante].pj++;
+                    if (p.gl > p.gv) stats[p.local].pts += 3;
+                    else if (p.gv > p.gl) stats[p.visitante].pts += 3;
+                    else { stats[p.local].pts++; stats[p.visitante].pts++; }
+                }
+            });
+            const tbody = document.getElementById('tabla-body');
+            tbody.innerHTML = Object.entries(stats).sort((a,b) => b[1].pts - a[1].pts).map(([name, s], i) => 
+                `<tr><td>${i+1}</td><td>${name}</td><td>${s.pj}</td><td>${s.pts}</td></tr>`
+            ).join('');
+        }
+
         function switchTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -497,169 +124,15 @@
             evt.currentTarget.classList.add('active');
         }
 
-        async function cargarLigasDeNube() {
-            let { data: lg, error: e1 } = await _supabase.from('ligas').select('*').order('id', { ascending: true });
-            let { data: pt } = await _supabase.from('resultados_partidos').select('*');
-            
-            if(e1 || !lg) return;
-            ligasCached = lg;
-            todasLigasPartidosGlobal = pt || [];
-            todasLigasConfigGlobal = lg || [];
-
-            let sel = document.getElementById('ligaSelector');
-            sel.innerHTML = '';
-            ligasCached.forEach(l => {
-                sel.innerHTML += `<option value="${l.id}">${l.nombre}</option>`;
-            });
-
-            if(!ligaActivaId && ligasCached.length > 0) {
-                ligaActivaId = ligasCached[ligasCached.length - 1].id;
-            }
-            if(ligaActivaId) {
-                sel.value = ligaActivaId;
-                let c = ligasCached.find(x => x.id == ligaActivaId);
-                document.getElementById('ligaDescripcionInput').value = c.descripcion || "";
-                partidosCached = todasLigasPartidosGlobal.filter(p => p.liga_id == ligaActivaId);
-            }
-            procesarEstadisticasYVistas();
-        }
-
-        async function cambiarLigaActiva() {
-            ligaActivaId = document.getElementById('ligaSelector').value;
-            let c = ligasCached.find(x => x.id == ligaActivaId);
-            document.getElementById('ligaDescripcionInput').value = c.descripcion || "";
-            partidosCached = todasLigasPartidosGlobal.filter(p => p.liga_id == ligaActivaId);
-            procesarEstadisticasYVistas();
-        }
-
-        async function guardarDescripcionNube() {
-            if(!isAdmin || !ligaActivaId) return;
-            let val = document.getElementById('ligaDescripcionInput').value;
-            await _supabase.from('ligas').update({ descripcion: val }).eq('id', ligaActivaId);
-        }
-
-        async function renombrarLigaActual() {
-            if(!isAdmin || !ligaActivaId) return;
-            let n = prompt("Nuevo nombre del torneo:");
-            if(n) {
-                await _supabase.from('ligas').update({ nombre: n }).eq('id', ligaActivaId);
-                await cargarLigasDeNube();
+        function pedirAccesoAdmin() {
+            if(prompt("Clave:") === "1234") {
+                isAdmin = true;
+                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'inline-flex');
             }
         }
 
-        function abrirModalNuevaLiga() { document.getElementById('modalNuevaLiga').style.display = 'flex'; }
-        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        async function procesarCreacionLiga() {
-            let nombre = document.getElementById('nlNombre').value.trim();
-            let monto = parseFloat(document.getElementById('nlInscripcion').value) || 0;
-            let cant = parseInt(document.getElementById('nlCantidad').value);
-            
-            let inputs = document.querySelectorAll('.nl-player-input');
-            let jugadores = [];
-            inputs.forEach(inp => {
-                let v = inp.value.trim();
-                if(v) jugadores.push(v);
-            });
-
-            if(jugadores.length !== cant) return alert(`Por favor, completá los ${cant} nombres.`);
-
-            // Mezclamos jugadores de forma aleatoria
-            jugadores.sort(() => Math.random() - 0.5);
-
-            // Insert elástico adaptado a tu formato public.ligas
-            let { data: nLiga, error } = await _supabase.from('ligas').insert([{
-                nombre: nombre, 
-                inscripcion_monto: monto, 
-                formato_jugadores: cant, 
-                descripcion: "Torneo de " + cant + " Jugadores",
-                jugadores: jugadores
-            }]).select();
-
-            if(error || !nLiga) return alert("Error al crear liga en base");
-
-            let idL = nLiga[0].id;
-            await generarCalendarioRoundRobin(idL, jugadores);
-
-            cerrarModal('modalNuevaLiga');
-            ligaActivaId = idL;
-            await cargarLigasDeNube();
-        }
-
-        async function generarCalendarioRoundRobin(lId, arrJug) {
-            let list = [...arrJug];
-            if(list.length % 2 !== 0) list.push("BYE");
-
-            let n = list.length;
-            let inserts = [];
-            let keyCont = 1;
-
-            // IDA
-            for (let f = 0; f < n - 1; f++) {
-                for (let i = 0; i < n / 2; i++) {
-                    let h = list[i]; let a = list[n - 1 - i];
-                    if (h !== "BYE" && a !== "BYE") {
-                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: f + 1, local: h, visitante: a, gl: null, gv: null });
-                    }
-                }
-                list.splice(1, 0, list.pop());
-            }
-            // VUELTA
-            for (let f = 0; f < n - 1; f++) {
-                for (let i = 0; i < n / 2; i++) {
-                    let h = list[n - 1 - i]; let a = list[i];
-                    if (h !== "BYE" && a !== "BYE") {
-                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: (n - 1) + f + 1, local: h, visitante: a, gl: null, gv: null });
-                    }
-                }
-                list.splice(1, 0, list.pop());
-            }
-            await _supabase.from('resultados_partidos').insert(inserts);
-        }
-
-        function procesarEstadisticasYVistas() {
-            statsRegular = {};
-            partidosCached.forEach(p => {
-                if(!statsRegular[p.local]) statsRegular[p.local] = { name: p.local, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 };
-                if(!statsRegular[p.visitante]) statsRegular[p.visitante] = { name: p.visitante, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 };
-            });
-
-            partidosCached.forEach(p => {
-                if(p.gl !== null && p.gv !== null) {
-                    let gl = parseInt(p.gl); let gv = parseInt(p.gv);
-                    statsRegular[p.local].pj++; statsRegular[p.visitante].pj++;
-                    statsRegular[p.local].gf += gl; statsRegular[p.local].gc += gv;
-                    statsRegular[p.visitante].gf += gv; statsRegular[p.visitante].gc += gl;
-                    if(gl > gv) { statsRegular[p.local].g++; statsRegular[p.local].pts += 3; statsRegular[p.visitante].p++; }
-                    else if(gv > gl) { statsRegular[p.visitante].g++; statsRegular[p.visitante].pts += 3; statsRegular[p.local].p++; }
-                    else { statsRegular[p.local].e++; statsRegular[p.local].pts += 1; statsRegular[p.visitante].e++; statsRegular[p.visitante].pts += 1; }
-                }
-            });
-            Object.keys(statsRegular).forEach(k => { statsRegular[k].dg = statsRegular[k].gf - statsRegular[k].gc; });
-
-            renderTabla();
-            renderFixture();
-            renderPremiosTab();
-            renderPremiosIndividualesTab();
-            renderPerfilesTab();
-        }
-
-        function renderTabla() {
-            let sorted = Object.values(statsRegular).sort((a,b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-            let tbody = document.getElementById('tabla-body'); tbody.innerHTML = '';
-            sorted.forEach((j, i) => {
-                tbody.innerHTML += `<tr><td><span class="pos-num">${i+1}</span></td><td><b>${j.name}</b></td><td>${j.pj}</td><td>${j.g}</td><td>${j.e}</td><td>${j.p}</td><td>${j.gf}</td><td>${j.gc}</td><td>${j.dg}</td><td class="pts-col">${j.pts}</td></tr>`;
-            });
-        }
-
-        function renderFixture() {
-            let container = document.getElementById('fixture-container'); container.innerHTML = '';
-            if(partidosCached.length === 0) return;
-            let maxF = Math.max(...partidosCached.map(p => p.fecha));
-
-            for(let f=1; f<=maxF; f++) {
-                let div = document.createElement('div'); div.className = 'fecha-contenedor';
-                div.innerHTML = `<div class="fecha-titulo">Fecha ${f}</div>`;
-                
-                partidosCached.filter(p => p.fecha === f).forEach(p => {
-                    let gl = p
+        init();
+    </script>
+    <button class="admin-footer-trigger" onclick="pedirAccesoAdmin()">.</button>
+</body>
+</html>
