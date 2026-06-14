@@ -67,7 +67,6 @@
             background: transparent;
             text-align: center;
             width: 100%;
-            color: var(--text-muted);
         }
         
         .description-sub:focus {
@@ -349,7 +348,6 @@
             <button class="tab-btn" onclick="switchTab(event, 'tab-perfiles')">👤 Perfiles</button>
         </div>
 
-        <!-- TABLA -->
         <div id="tab-tabla" class="tab-content active">
             <table>
                 <thead>
@@ -359,17 +357,14 @@
             </table>
         </div>
 
-        <!-- FIXTURE -->
         <div id="tab-fixture" class="tab-content">
             <div id="fixture-container"></div>
         </div>
 
-        <!-- COPA -->
         <div id="tab-copa" class="tab-content">
             <div class="bracket-container" id="copa-bracket-container"></div>
         </div>
 
-        <!-- PREMIOS -->
         <div id="tab-premios" class="tab-content">
             <div class="career-box">
                 <h3 style="color:var(--accent-yellow); margin-top:0;" id="txtTipoTorneo">POZO DEL TORNEO</h3>
@@ -378,7 +373,6 @@
             </div>
         </div>
 
-        <!-- PREMIOS INDIVIDUALES -->
         <div id="tab-premios-ind" class="tab-content">
             <div class="career-box">
                 <h3 style="color:var(--primary-neon); margin-top:0;">👑 Premios de la Fase Regular</h3>
@@ -395,7 +389,6 @@
             </div>
         </div>
 
-        <!-- PERFILES -->
         <div id="tab-perfiles" class="tab-content">
             <div class="perfiles-grid" id="perfiles-botones-grid"></div>
             <div class="career-box" id="perfil-detalle-box" style="display:none;">
@@ -414,7 +407,6 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVA LIGA -->
     <div class="modal" id="modalNuevaLiga">
         <div class="modal-content">
             <h3 style="color:var(--primary-neon); margin-top:0;">➕ Crear Nueva Liga</h3>
@@ -452,9 +444,9 @@
     <button class="admin-footer-trigger" onclick="pedirAccesoAdmin()">.</button>
 
     <script>
-        // CONFIGURACIÓN DE TU SUPABASE
-        const SUPABASE_URL = "https://TU_SUPABASE_URL.supabase.co"; 
-        const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
+        // CONFIGURACIÓN REAL DE TU SUPABASE INYECTADA COMPLETAMENTE
+        const SUPABASE_URL = "https://zmzztkbndsuasfiuhepw.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_pijw_DnJiHSxvAvAc-HLFQ_G5Y5h3AI";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Nombres fijos originales
@@ -468,6 +460,9 @@
         let statsRegular = {};
         let todasLigasPartidosGlobal = []; 
         let todasLigasConfigGlobal = [];
+
+        // Inicializar al cargar
+        init();
 
         async function init() {
             await cargarLigasDeNube();
@@ -494,10 +489,17 @@
             }
         }
 
+        // Sistema para cambiar entre pestañas del Menú
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
         async function cargarLigasDeNube() {
             let { data: lg, error: e1 } = await _supabase.from('ligas').select('*').order('id', { ascending: true });
             let { data: pt } = await _supabase.from('resultados_partidos').select('*');
-            let { data: cp } = await _supabase.from('fase_eliminatoria').select('*');
             
             if(e1 || !lg) return;
             ligasCached = lg;
@@ -518,7 +520,6 @@
                 let c = ligasCached.find(x => x.id == ligaActivaId);
                 document.getElementById('ligaDescripcionInput').value = c.descripcion || "";
                 partidosCached = todasLigasPartidosGlobal.filter(p => p.liga_id == ligaActivaId);
-                copaCached = (cp || []).filter(p => p.liga_id == ligaActivaId);
             }
             procesarEstadisticasYVistas();
         }
@@ -528,8 +529,6 @@
             let c = ligasCached.find(x => x.id == ligaActivaId);
             document.getElementById('ligaDescripcionInput').value = c.descripcion || "";
             partidosCached = todasLigasPartidosGlobal.filter(p => p.liga_id == ligaActivaId);
-            let { data: cp } = await _supabase.from('fase_eliminatoria').select('*').eq('liga_id', ligaActivaId);
-            copaCached = cp || [];
             procesarEstadisticasYVistas();
         }
 
@@ -565,18 +564,22 @@
 
             if(jugadores.length !== cant) return alert(`Por favor, completá los ${cant} nombres.`);
 
-            // Mezclamos la lista de jugadores de forma aleatoria para que cambien los cruces
+            // Mezclamos jugadores de forma aleatoria
             jugadores.sort(() => Math.random() - 0.5);
 
+            // Insert elástico adaptado a tu formato public.ligas
             let { data: nLiga, error } = await _supabase.from('ligas').insert([{
-                nombre: nombre, inscripcion_monto: monto, formato_jugadores: cant, descripcion: "Torneo de " + cant + " Jugadores"
+                nombre: nombre, 
+                inscripcion_monto: monto, 
+                formato_jugadores: cant, 
+                descripcion: "Torneo de " + cant + " Jugadores",
+                jugadores: jugadores
             }]).select();
 
             if(error || !nLiga) return alert("Error al crear liga en base");
 
             let idL = nLiga[0].id;
             await generarCalendarioRoundRobin(idL, jugadores);
-            await generarEstructuraCopaInicial(idL, jugadores);
 
             cerrarModal('modalNuevaLiga');
             ligaActivaId = idL;
@@ -596,7 +599,7 @@
                 for (let i = 0; i < n / 2; i++) {
                     let h = list[i]; let a = list[n - 1 - i];
                     if (h !== "BYE" && a !== "BYE") {
-                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: f + 1, local: h, visitante: a });
+                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: f + 1, local: h, visitante: a, gl: null, gv: null });
                     }
                 }
                 list.splice(1, 0, list.pop());
@@ -606,43 +609,12 @@
                 for (let i = 0; i < n / 2; i++) {
                     let h = list[n - 1 - i]; let a = list[i];
                     if (h !== "BYE" && a !== "BYE") {
-                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: (n - 1) + f + 1, local: h, visitante: a });
+                        inserts.push({ liga_id: lId, partido_key: "REG_" + (keyCont++), fecha: (n - 1) + f + 1, local: h, visitante: a, gl: null, gv: null });
                     }
                 }
                 list.splice(1, 0, list.pop());
             }
             await _supabase.from('resultados_partidos').insert(inserts);
-        }
-
-        async function generarEstructuraCopaInicial(lId, arrJug) {
-            let cant = arrJug.length;
-            let nodes = [];
-
-            if(cant === 4) {
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S1', local: '1° Tabla', visitante: '4° Tabla', proximo_partido_id: 'FINAL', es_local_en_proximo: true });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S2', local: '2° Tabla', visitante: '3° Tabla', proximo_partido_id: 'FINAL', es_local_en_proximo: false });
-            } else if(cant === 5) {
-                nodes.push({ liga_id: lId, fase: 'CUARTOS', partido_id: 'C1', local: '4° Tabla', visitante: '5° Tabla', proximo_partido_id: 'S1', es_local_en_proximo: false });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S1', local: '1° Tabla', visitante: 'Ganador C1', proximo_partido_id: 'FINAL', es_local_en_proximo: true });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S2', local: '2° Tabla', visitante: '3° Tabla', proximo_partido_id: 'FINAL', es_local_en_proximo: false });
-            } else if(cant === 6) {
-                nodes.push({ liga_id: lId, fase: 'CUARTOS', partido_id: 'C1', local: '3° Tabla', visitante: '6° Tabla', proximo_partido_id: 'S1', es_local_en_proximo: false });
-                nodes.push({ liga_id: lId, fase: 'CUARTOS', partido_id: 'C2', local: '4° Tabla', visitante: '5° Tabla', proximo_partido_id: 'S2', es_local_en_proximo: false });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S1', local: '1° Tabla', visitante: 'Ganador C1', proximo_partido_id: 'FINAL', es_local_en_proximo: true });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S2', local: '2° Tabla', visitante: 'Ganador C2', proximo_partido_id: 'FINAL', es_local_en_proximo: false });
-            } else if(cant >= 7 && cant <= 10) {
-                // Estructura simplificada estándar para aguantar la copa visual de 7-10
-                nodes.push({ liga_id: lId, fase: 'CUARTOS', partido_id: 'C1', local: '🤼 Rival A', visitante: '🤼 Rival B', proximo_partido_id: 'S1', es_local_en_proximo: true });
-                nodes.push({ liga_id: lId, fase: 'CUARTOS', partido_id: 'C2', local: '🤼 Rival C', visitante: '🤼 Rival D', proximo_partido_id: 'S1', es_local_en_proximo: false });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S1', local: 'Ganador C1', visitante: 'Ganador C2', proximo_partido_id: 'FINAL', es_local_en_proximo: true });
-                nodes.push({ liga_id: lId, fase: 'SEMIS', partido_id: 'S2', local: 'Clasificado Directo A', visitante: 'Clasificado Directo B', proximo_partido_id: 'FINAL', es_local_en_proximo: false });
-            }
-
-            // Todas las copas cierran con Final y Tercer Puesto
-            nodes.push({ liga_id: lId, fase: 'FINAL', partido_id: 'FINAL', local: 'Ganador Semis 1', visitante: 'Ganador Semis 2' });
-            nodes.push({ liga_id: lId, fase: 'TERCER_PUESTO', partido_id: '3ER', local: 'Perdedor Semis 1', visitante: 'Perdedor Semis 2' });
-
-            await _supabase.from('fase_eliminatoria').insert(nodes);
         }
 
         function procesarEstadisticasYVistas() {
@@ -667,7 +639,6 @@
 
             renderTabla();
             renderFixture();
-            renderCopaBracket();
             renderPremiosTab();
             renderPremiosIndividualesTab();
             renderPerfilesTab();
@@ -691,277 +662,4 @@
                 div.innerHTML = `<div class="fecha-titulo">Fecha ${f}</div>`;
                 
                 partidosCached.filter(p => p.fecha === f).forEach(p => {
-                    let gl = p.gl !== null ? p.gl : ''; let gv = p.gv !== null ? p.gv : '';
-                    let dis = isAdmin ? '' : 'disabled';
-                    let h2hBtn = `<button class="btn-h2h" onclick="mostrarMiniH2H('${p.local}','${p.visitante}')">📊</button>`;
-
-                    div.innerHTML += `<div class="partido-card">
-                        <div class="team-name team-home">${p.local}</div>
-                        <div class="score-container">
-                            <input type="number" class="score-input" id="reg_gl_${p.id}" value="${gl}" ${dis} onchange="actualizarPartidoRegular(${p.id})"> - 
-                            <input type="number" class="score-input" id="reg_gv_${p.id}" value="${gv}" ${dis} onchange="actualizarPartidoRegular(${p.id})">
-                            ${h2hBtn}
-                        </div>
-                        <div class="team-name team-away">${p.visitante}</div>
-                    </div>`;
-                });
-                container.appendChild(div);
-            }
-        }
-
-        function mostrarMiniH2H(j1, j2) {
-            let v1 = 0, v2 = 0, emp = 0;
-            let racha = [];
-
-            todasLigasPartidosGlobal.forEach(p => {
-                if(p.gl !== null && p.gv !== null) {
-                    if(p.local === j1 && p.visitante === j2) {
-                        if(p.gl > p.gv) { v1++; racha.push(j1); }
-                        else if(p.gv > p.gl) { v2++; racha.push(j2); }
-                        else { emp++; racha.push('E'); }
-                    } else if(p.local === j2 && p.visitante === j1) {
-                        if(p.gl > p.gv) { v2++; racha.push(j2); }
-                        else if(p.gv > p.gl) { v1++; racha.push(j1); }
-                        else { emp++; racha.push('E'); }
-                    }
-                }
-            });
-
-            let ultimos3 = racha.slice(-3).reverse().join(', ') || 'Ninguno';
-            alert(`Historial Cruzado:\n${j1}: ${v1} victorias\n${j2}: ${v2} victorias\nEmpates: ${emp}\n\nRacha Reciente (últimos 3): [${ultimos3}]`);
-        }
-
-        async function actualizarPartidoRegular(idP) {
-            let glV = document.getElementById(`reg_gl_${idP}`).value;
-            let gvV = document.getElementById(`reg_gv_${idP}`).value;
-            if(glV === '' || gvV === '') return;
-            
-            // Usamos UPDATE directo sobre el ID para corregir limpiamente el bug del 2-2
-            let { error } = await _supabase.from('resultados_partidos').update({ gl: parseInt(glV), gv: parseInt(gvV) }).eq('id', idP);
-            if(!error) {
-                let idx = todasLigasPartidosGlobal.findIndex(p => p.id == idP);
-                if(idx !== -1) { todasLigasPartidosGlobal[idx].gl = parseInt(glV); todasLigasPartidosGlobal[idx].gv = parseInt(gvV); }
-                partidosCached = todasLigasPartidosGlobal.filter(p => p.liga_id == ligaActivaId);
-                procesarEstadisticasYVistas();
-            }
-        }
-
-        function renderCopaBracket() {
-            let box = document.getElementById('copa-bracket-container');
-            box.innerHTML = '';
-            if(copaCached.length === 0) { box.innerHTML = 'Fase de copa no inicializada.'; return; }
-
-            let fases = ['CUARTOS', 'SEMIS', 'FINAL', 'TERCER_PUESTO'];
-            fases.forEach(f => {
-                let matches = copaCached.filter(m => m.fase === f);
-                if(matches.length === 0) return;
-
-                let fDiv = document.createElement('div'); fDiv.className = 'bracket-fase';
-                fDiv.innerHTML = `<div class="bracket-fase-titulo">${f.replace('_',' ')}</div>`;
-
-                matches.forEach(m => {
-                    let gl = m.gl !== null ? m.gl : ''; let gv = m.gv !== null ? m.gv : '';
-                    let dis = isAdmin ? '' : 'disabled';
-                    fDiv.innerHTML += `<div class="partido-card" style="background:#181b1d;">
-                        <div class="team-name team-home">${m.local}</div>
-                        <div class="score-container">
-                            <input type="number" class="score-input" id="copa_gl_${m.id}" value="${gl}" ${dis} onchange="actualizarPartidoCopa(${m.id})"> - 
-                            <input type="number" class="score-input" id="copa_gv_${m.id}" value="${gv}" ${dis} onchange="actualizarPartidoCopa(${m.id})">
-                        </div>
-                        <div class="team-name team-away">${m.visitante}</div>
-                    </div>`;
-                });
-                box.appendChild(fDiv);
-            });
-        }
-
-        async function actualizarPartidoCopa(idM) {
-            let glV = document.getElementById(`copa_gl_${idM}`).value;
-            let gvV = document.getElementById(`copa_gv_${idM}`).value;
-            if(glV === '' || gvV === '') return;
-
-            let gl = parseInt(glV); let gv = parseInt(gvV);
-            let { error } = await _supabase.from('fase_eliminatoria').update({ gl: gl, gv: gv }).eq('id', idM);
-            if(!error) {
-                let m = copaCached.find(x => x.id == idM);
-                m.gl = gl; m.gv = gv;
-                
-                // Si tiene un próximo partido enlazado, le movemos el nombre del ganador automáticamente
-                if(m.proximo_partido_id) {
-                    let ganador = gl > gv ? m.local : m.visitante;
-                    let esLocal = m.es_local_en_proximo;
-                    let updateObj = esLocal ? { local: ganador } : { visitante: ganador };
-                    
-                    await _supabase.from('fase_eliminatoria').update(updateObj).eq('liga_id', ligaActivaId).eq('partido_id', m.proximo_partido_id);
-                }
-                
-                let { data: cp } = await _supabase.from('fase_eliminatoria').select('*').eq('liga_id', ligaActivaId);
-                copaCached = cp || [];
-                procesarEstadisticasYVistas();
-            }
-        }
-
-        function renderPremiosTab() {
-            let conf = ligasCached.find(x => x.id == ligaActivaId);
-            if(!conf) return;
-
-            let txtTipo = document.getElementById('txtTipoTorneo');
-            let txtPozo = document.getElementById('txtPozoTotal');
-            let list = document.getElementById('desglose-premios-lista');
-            list.innerHTML = '';
-
-            let jCount = conf.formato_jugadores || 6;
-            let montoInsc = conf.inscripcion_monto || 0;
-            let pozoTotal = jCount * montoInsc;
-
-            if(montoInsc === 0) {
-                txtTipo.textContent = "🏆 MODO TORNEO AMISTOSO";
-                txtTipo.style.color = "var(--primary-neon)";
-                txtPozo.textContent = "¡Se juega por el Honor!";
-                return;
-            }
-
-            txtTipo.textContent = "💰 MODO TORNEO COMPETITIVO";
-            txtTipo.style.color = "var(--accent-yellow)";
-            txtPozo.textContent = `Pozo Acumulado: $${pozoTotal} (Inscripción: $${montoInsc} c/u)`;
-
-            let pLiga = Math.round(pozoTotal * 0.30);
-            let pCamp = Math.round(pozoTotal * 0.37);
-            let pSub = Math.round(pozoTotal * 0.20);
-            let p3er = Math.round(pozoTotal * 0.13);
-
-            list.innerHTML += `<div>🏢 <b>Fondo Acumulado de la Liga (30%):</b> $${pLiga}</div>`;
-            list.innerHTML += `<div>🥇 <b>Campeón de Copa (37%):</b> $${pCamp}</div>`;
-            list.innerHTML += `<div>🥈 <b>Subcampeón (20%):</b> $${pSub}</div>`;
-            list.innerHTML += `<div>🥉 <b>Tercer Puesto (13%):</b> $${p3er}</div>`;
-        }
-
-        function renderPremiosIndividualesTab() {
-            let arr = Object.values(statsRegular);
-            if(arr.length === 0) return;
-
-            let goleador = [...arr].sort((a,b) => b.gf - a.gf)[0];
-            let solido = [...arr].sort((a,b) => a.gc - b.gc)[0];
-            let efectivo = [...arr].sort((a,b) => b.dg - a.dg)[0];
-            let mvp = [...arr].sort((a,b) => (b.pts + b.dg + b.gf) - (a.pts + a.dg + a.gf))[0];
-            let decepcion = [...arr].sort((a,b) => a.pts - b.pts || a.dg - b.dg)[0];
-
-            document.getElementById('ind-goleador').textContent = `${goleador.name} (${goleador.gf} GF)`;
-            document.getElementById('ind-solido').textContent = `${solido.name} (${solido.gc} GC)`;
-            document.getElementById('ind-efectivo').textContent = `${efectivo.name} (${efectivo.dg >= 0 ? '+' : ''}${efectivo.dg} DG)`;
-            document.getElementById('ind-mvp').textContent = `${mvp.name}`;
-            document.getElementById('ind-decepcion').textContent = `${decepcion.name} (Último lugar)`;
-
-            // Calculamos Revelación y El Más Gagá combinando todos los datos
-            document.getElementById('ind-revelacion').textContent = "Se define al finalizar el torneo";
-
-            // Buscar peor goleada en un único partido
-            let maxDif = 0; let gagaPlayer = "-"; let gagaPart = "";
-            partidosCached.concat(copaCached).forEach(p => {
-                if(p.gl !== null && p.gv !== null) {
-                    let dif = Math.abs(p.gl - p.gv);
-                    if(dif > maxDif) {
-                        maxDif = dif;
-                        gagaPlayer = p.gl > p.gv ? p.visitante : p.local;
-                        gagaPart = `(${p.local} ${p.gl} - ${p.gv} ${p.visitante})`;
-                    }
-                }
-            });
-            document.getElementById('ind-gaga').textContent = gagaPlayer;
-            document.getElementById('ind-gaga-partido').textContent = maxDif > 0 ? gagaPart : "";
-        }
-
-        function renderPerfilesTab() {
-            let grid = document.getElementById('perfiles-botones-grid');
-            grid.innerHTML = '';
-            
-            let nombresPresentes = new Set();
-            todasLigasPartidosGlobal.forEach(p => { nombresPresentes.add(p.local); nombresPresentes.add(p.visitante); });
-            if(nombresPresentes.size === 0) {
-                // Si está vacío, rellenamos con la lista del torneo actual
-                Object.keys(statsRegular).forEach(n => nombresPresentes.add(n));
-            }
-
-            Array.from(nombresPresentes).forEach(nom => {
-                if(nom === "BYE" || nom.includes("Tabla") || nom.includes("Ganador") || nom.includes("Perdedor") || nom.includes("Rival")) return;
-                grid.innerHTML += `<button class="perfil-card-btn" onclick="verPerfilJugador('${nom}', this)">${nom}</button>`;
-            });
-        }
-
-        function verPerfilJugador(nom, btn) {
-            document.querySelectorAll('.perfil-card-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-
-            document.getElementById('perfil-detalle-box').style.display = 'block';
-            document.getElementById('perf-nombre').textContent = nom;
-
-            let totalPj = 0; let totalGf = 0; let plataTotal = 0;
-            let maxGfPart = 0; let worstGcPart = 0;
-            let bestStr = "-"; let worstStr = "-";
-
-            let h2hContadores = {};
-
-            // Analizar toda la carrera del jugador en la base de datos
-            todasLigasPartidosGlobal.forEach(p => {
-                if(p.gl !== null && p.gv !== null) {
-                    if(p.local === nom) {
-                        totalPj++; totalGf += p.gl;
-                        if(p.gl - p.gv > maxGfPart) { maxGfPart = p.gl - p.gv; bestStr = `Ganó ${p.gl}-${p.gv} contra ${p.visitante}`; }
-                        if(p.gv - p.gl > worstGcPart) { worstGcPart = p.gv - p.gl; worstStr = `Perdió ${p.gl}-${p.gv} contra ${p.visitante}`; }
-                        
-                        if(!h2hContadores[p.visitante]) h2hContadores[p.visitante] = { g:0, p:0 };
-                        if(p.gl > p.gv) h2hContadores[p.visitante].g++; else if(p.gv > p.gl) h2hContadores[p.visitante].p++;
-                    }
-                    if(p.visitante === nom) {
-                        totalPj++; totalGf += p.gv;
-                        if(p.gv - p.gl > maxGfPart) { maxGfPart = p.gv - p.gl; bestStr = `Ganó ${p.gv}-${p.gl} contra ${p.local}`; }
-                        if(p.gl - p.gv > worstGcPart) { worstGcPart = p.gl - p.gv; worstStr = `Perdió ${p.gl}-${p.gv} contra ${p.local}`; }
-                        
-                        if(!h2hContadores[p.local]) h2hContadores[p.local] = { g:0, p:0 };
-                        if(p.gv > p.gl) h2hContadores[p.local].g++; else if(p.gl > p.gv) h2hContadores[p.local].p++;
-                    }
-                }
-            });
-
-            document.getElementById('perf-pj').textContent = totalPj;
-            document.getElementById('perf-gf').textContent = totalGf;
-            document.getElementById('perf-best').textContent = bestStr;
-            document.getElementById('perf-worst').textContent = worstStr;
-
-            // Paternidades folclóricas
-            let paternidadTexto = "Historial en tablas";
-            let maxVictorias = 0;
-            Object.keys(h2hContadores).forEach(rival => {
-                let diff = h2hContadores[rival].g - h2hContadores[rival].p;
-                if(diff >= 2 && h2hContadores[rival].g > maxVictorias) {
-                    maxVictorias = h2hContadores[rival].g;
-                    paternidadTexto = `Papá de ${rival} (+${diff} partidos a favor)`;
-                }
-            });
-            document.getElementById('perf-paternidad').textContent = paternidadTexto;
-
-            // Armar vitrina ficticia basada en participaciones y dinero
-            let vit = document.getElementById('perf-vitrina'); vit.innerHTML = '';
-            
-            // Simulación de vitrina por torneos jugados
-            todasLigasConfigGlobal.forEach(l => {
-                let monto = l.inscripcion_monto || 0;
-                if(monto > 0) {
-                    vit.innerHTML += `<div class="trofeo-item">🏅<br><b>Copa de la Liga</b><br><span style="color:var(--accent-yellow)">Competitivo</span></div>`;
-                } else {
-                    vit.innerHTML += `<div class="trofeo-item">⚡<br><b>Relámpago</b><br><span style="color:var(--text-muted)">Amistoso</span></div>`;
-                }
-            });
-        }
-
-        function switchTab(evt, tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        }
-
-        window.onload = init;
-    </script>
-</body>
-</html>
+                    let gl = p
