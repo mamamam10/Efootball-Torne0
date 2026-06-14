@@ -1,15 +1,105 @@
-HTML
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>PRUEBA DE CARGA</title>
-</head>
-<body>
-    <h1 style="color: yellow;">¡EL CÓDIGO SÍ ESTÁ CARGANDO!</h1>
-    <script>
-        console.log("El script se está ejecutando correctamente.");
-        alert("Si ves este cartel, el código funciona.");
-    </script>
-</body>
-</html>
+// --- CORRECCIÓN CRÍTICA DE GUARDADO ---
+async function guardarPartidoEnNube(idPartido) {
+    let gl = document.getElementById(`gl_${idPartido}`).value;
+    let gv = document.getElementById(`gv_${idPartido}`).value;
+
+    if(gl === '' || gv === '') return alert("Ingresá ambos goles");
+
+    // Usamos las columnas EXACTAS del SQL: gl y gv
+    let { error } = await _supabase.from('resultados_partidos').update({
+        gl: parseInt(gl),
+        gv: parseInt(gv)
+    }).eq('id', idPartido);
+
+    if(error) {
+        alert("Error: " + error.message);
+    } else {
+        alert("¡Resultado guardado!");
+        await cargarPartidosDeLigaActiva(); // Refrescar datos
+    }
+}
+
+// --- CORRECCIÓN DE LECTURA DE ESTADÍSTICAS ---
+function procesarEstadisticasYTablas() {
+    let ligaActual = ligasCached.find(l => l.id == ligaActivaId);
+    let jugActivos = ligaActual ? ligaActual.jugadores : [];
+    
+    statsGlobales = {};
+    jugActivos.forEach(j => {
+        statsGlobales[j] = { name: j, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 };
+    });
+
+    partidosCached.forEach(p => {
+        // Validamos usando p.gl y p.gv
+        if(p.gl !== null && p.gv !== null) {
+            let gl = parseInt(p.gl);
+            let gv = parseInt(p.gv);
+            
+            if(statsGlobales[p.local] && statsGlobales[p.visitante]) {
+                statsGlobales[p.local].pj++;
+                statsGlobales[p.visitante].pj++;
+                statsGlobales[p.local].gf += gl;
+                statsGlobales[p.local].gc += gv;
+                statsGlobales[p.visitante].gf += gv;
+                statsGlobales[p.visitante].gc += gl;
+
+                if(gl > gv) {
+                    statsGlobales[p.local].g++;
+                    statsGlobales[p.local].pts += 3;
+                    statsGlobales[p.visitante].p++;
+                } else if(gv > gl) {
+                    statsGlobales[p.visitante].g++;
+                    statsGlobales[p.visitante].pts += 3;
+                    statsGlobales[p.local].p++;
+                } else {
+                    statsGlobales[p.local].e++;
+                    statsGlobales[p.local].pts += 1;
+                    statsGlobales[p.visitante].e++;
+                    statsGlobales[p.visitante].pts += 1;
+                }
+            }
+        }
+    });
+
+    Object.keys(statsGlobales).forEach(j => {
+        statsGlobales[j].dg = statsGlobales[j].gf - statsGlobales[j].gc;
+    });
+
+    renderTabla();
+    renderFixture();
+}
+
+// --- CORRECCIÓN DE RENDER DE FIXTURE ---
+function renderFixture() {
+    let container = document.getElementById('fixture-container');
+    container.innerHTML = '';
+    if(partidosCached.length === 0) return;
+
+    let maxFecha = Math.max(...partidosCached.map(p => p.fecha));
+    
+    for(let f=1; f<=maxFecha; f++) {
+        let divFecha = document.createElement('div');
+        divFecha.className = 'fecha-contenedor';
+        divFecha.innerHTML = `<div class="fecha-titulo">Fecha ${f}</div>`;
+        
+        let partidosFecha = partidosCached.filter(p => p.fecha === f);
+        partidosFecha.forEach(p => {
+            let card = document.createElement('div');
+            card.className = `partido-card ${p.gl !== null ? 'jugado' : ''}`;
+            
+            // Usamos p.gl y p.gv
+            card.innerHTML = `
+                <div class="team-name team-home">${p.local}</div>
+                <div class="score-container">
+                    <input type="number" class="score-input" id="gl_${p.id}" value="${p.gl || ''}">
+                    <span style="color:var(--text-muted)">-</span>
+                    <input type="number" class="score-input" id="gv_${p.id}" value="${p.gv || ''}">
+                    <button class="btn-save-partido" onclick="guardarPartidoEnNube(${p.id})">💾</button>
+                </div>
+                <div class="team-name team-away">${p.visitante}</div>
+            `;
+            divFecha.appendChild(card);
+        });
+        container.appendChild(divFecha);
+    }
+}
