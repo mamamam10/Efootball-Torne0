@@ -342,51 +342,6 @@
             color: var(--primary-neon);
         }
 
-        /* Vitrina */
-        .vitrina-container {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-top: 20px;
-        }
-
-        .vitrina-title {
-            color: var(--accent-yellow);
-            text-transform: uppercase;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .trofeos-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .trofeo-item {
-            background: #121315;
-            padding: 10px 15px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        .trofeo-badge {
-            font-size: 1.3rem;
-        }
-
-        .trofeo-type {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
         /* Modales */
         .modal {
             display: none;
@@ -448,7 +403,6 @@
             margin-top: 20px;
         }
 
-        /* Info box inferior */
         .info-box-footer {
             background-color: #121315;
             border-left: 4px solid var(--primary-neon);
@@ -489,62 +443,19 @@
         <div id="tab-tabla" class="tab-content active">
             <table>
                 <thead>
-                    <tr>
-                        <th>Pos</th>
-                        <th>Jugador</th>
-                        <th>PJ</th>
-                        <th>G</th>
-                        <th>E</th>
-                        <th>P</th>
-                        <th>GF</th>
-                        <th>GC</th>
-                        <th>DG</th>
-                        <th>Pts</th>
-                    </tr>
+                    <tr><th>Pos</th><th>Jugador</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr>
                 </thead>
-                <tbody id="tabla-body">
-                    </tbody>
+                <tbody id="tabla-body"></tbody>
             </table>
-            <div class="info-box-footer">Cargá los resultados en el Fixture. Todo se actualiza automáticamente.</div>
         </div>
 
-        <div id="tab-fixture" class="tab-content">
-            <div id="fixture-container"></div>
-        </div>
-
-        <div id="tab-copa" class="tab-content">
-            <div class="info-box-footer" id="copa-formato-desc">Formato de copa dinámico según cantidad de jugadores.</div>
-            <div id="bracket-container" style="margin-top:20px;"></div>
-        </div>
-
-        <div id="tab-premios" class="tab-content">
-            <div id="premios-dinamicos-container"></div>
-        </div>
-
-        <div id="tab-premios-ind" class="tab-content">
-            <div class="stats-grid" id="premios-ind-grid">
-                </div>
-        </div>
-
+        <div id="tab-fixture" class="tab-content"><div id="fixture-container"></div></div>
+        <div id="tab-copa" class="tab-content"><div id="bracket-container"></div></div>
+        <div id="tab-premios" class="tab-content"><div id="premios-dinamicos-container"></div></div>
+        <div id="tab-premios-ind" class="tab-content"><div class="stats-grid" id="premios-ind-grid"></div></div>
         <div id="tab-perfiles" class="tab-content">
-            <div class="perfiles-grid" id="perfiles-grid-select">
-                </div>
-            <div id="perfil-detalle-container">
-                </div>
-        </div>
-    </div>
-
-    <div class="modal" id="modalRenombrar">
-        <div class="modal-content">
-            <div class="modal-title">📝 Renombrar Torneo</div>
-            <div class="form-group">
-                <label>Nombre del Torneo</label>
-                <input type="text" id="editNombreLigaInput" class="form-control">
-            </div>
-            <div class="modal-actions">
-                <button class="btn" onclick="cerrarModal('modalRenombrar')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarNombreLiga()">Guardar</button>
-            </div>
+            <div class="perfiles-grid" id="perfiles-grid-select"></div>
+            <div id="perfil-detalle-container"></div>
         </div>
     </div>
 
@@ -556,16 +467,20 @@
                 <input type="text" id="nuevaLigaNombre" class="form-control" value="Liga 2">
             </div>
             <div class="form-group">
-                <label>Monto de Inscripción por Jugador ($)</label>
+                <label>Monto de Inscripción ($)</label>
                 <input type="number" id="nuevaLigaPozo" class="form-control" value="1000">
             </div>
             <div class="form-group">
                 <label style="margin-bottom:10px; display:block;">Seleccionar Jugadores activos:</label>
-                <div id="checkboxes-jugadores" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div id="checkboxes-jugadores" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; max-height:160px; overflow-y:auto; padding-right:5px;">
                     </div>
             </div>
-            <div class="form-group" style="margin-top:15px;">
-                <label><input type="checkbox" id="mezclarFechasAzar" checked> Mezclar orden de partidos al azar</label>
+            <div class="form-group" style="display:flex; gap:5px;">
+                <input type="text" id="nuevoJugadorExtraInput" class="form-control" placeholder="Nombre nuevo amigo" style="padding:5px;">
+                <button class="btn" onclick="agregarJugadorALaLista()" style="padding:5px 10px; font-size:0.85rem;">➕ Sumar</button>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="mezclarFechasAzar" checked> Mezclar orden al azar</label>
             </div>
             <div class="modal-actions">
                 <button class="btn" onclick="cerrarModal('modalNuevaLiga')">Cancelar</button>
@@ -575,13 +490,13 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
+        // CREDENCIALES SUPABASE
         const SUPABASE_URL = "https://TU_SUPABASE_URL.supabase.co"; 
         const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Nombres por defecto base
-        let listaJugadoresBase = ["Diego", "Nazario", "Ezequiel", "Matías", "Joseph", "Pablo"];
+        // LISTA INICIAL CON LOS 10 JUGADORES SOLICITADOS
+        let listaJugadoresBase = ["Diego", "Nazario", "Ezequiel", "Matías", "Joseph", "Pablo", "Tomas", "Lucas", "Bautista", "Agustin"];
         let isAdmin = false;
         let ligasCached = [];
         let ligaActivaId = null;
@@ -596,17 +511,15 @@
 
         function toggleAdminAuth() {
             if(!isAdmin) {
-                let pass = prompt("Introducir clave de Administrador:");
-                if(pass === "1234") { // Podés cambiar tu clave acá obligatoriamente si usabas otra
+                let pass = prompt("Clave Admin:");
+                if(pass === "1234") { 
                     isAdmin = true;
                     document.getElementById('adminLockBtn').textContent = "🔓 Modo Admin Activo";
                     document.getElementById('adminLockBtn').classList.add('logged');
                     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-flex');
                     document.body.classList.add('admin-mode');
                     renderFixture();
-                } else {
-                    alert("Clave incorrecta");
-                }
+                } else { alert("Incorrecta"); }
             } else {
                 isAdmin = false;
                 document.getElementById('adminLockBtn').textContent = "🔒 Entrar como Admin";
@@ -615,65 +528,6 @@
                 document.body.classList.remove('admin-mode');
                 renderFixture();
             }
-        }
-
-        async function cargarLigas() {
-            let { data, error } = await _supabase.from('ligas').select('*').order('created_at', { ascending: true });
-            if (error) return console.error(error);
-            ligasCached = data;
-            
-            let selector = document.getElementById('ligaSelector');
-            selector.innerHTML = '';
-            
-            if(ligasCached.length === 0) {
-                await crearLigaInicialAutomatica();
-                return;
-            }
-
-            ligasCached.forEach(l => {
-                let opt = document.createElement('option');
-                opt.value = l.id;
-                opt.textContent = l.nombre;
-                selector.appendChild(opt);
-            });
-
-            if(!ligaActivaId) ligaActivaId = ligasCached[ligasCached.length - 1].id;
-            selector.value = ligaActivaId;
-            
-            await cargarPartidosDeLigaActiva();
-        }
-
-        async function crearLigaInicialAutomatica() {
-            let { data, error } = await _supabase.from('ligas').insert([{
-                nombre: "Liga 1",
-                jugadores: ["Diego", "Nazario", "Ezequiel", "Matías"],
-                monto_individual: 1000
-            }]).select();
-            if(!error) {
-                ligaActivaId = data[0].id;
-                await generarFixtureRoundRobin(ligaActivaId, ["Diego", "Nazario", "Ezequiel", "Matías"], false);
-                await cargarLigas();
-            }
-        }
-
-        async function cargarPartidosDeLigaActiva() {
-            let { data, error } = await _supabase.from('resultados_partidos').select('*').eq('liga_id', ligaActivaId);
-            if (error) return console.error(error);
-            partidosCached = data;
-            
-            procesarEstadisticasYTablas();
-        }
-
-        function cambiarLigaActiva() {
-            ligaActivaId = document.getElementById('ligaSelector').value;
-            cargarPartidosDeLigaActiva();
-        }
-
-        function switchTab(evt, tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
         }
 
         function configurarCheckboxesNuevaLiga() {
@@ -686,24 +540,48 @@
             });
         }
 
-        function abrirModalNuevaLiga() { document.getElementById('modalNuevaLiga').style.display = 'flex'; }
-        
-        function abrirModalRenombrar() { 
-            let curr = ligasCached.find(l => l.id == ligaActivaId);
-            document.getElementById('editNombreLigaInput').value = curr.nombre;
-            document.getElementById('modalRenombrar').style.display = 'flex'; 
+        function agregarJugadorALaLista() {
+            let input = document.getElementById('nuevoJugadorExtraInput');
+            let nombre = input.value.trim();
+            if(!nombre) return;
+            if(listaJugadoresBase.includes(nombre)) return alert("Ya existe");
+            listaJugadoresBase.push(nombre);
+            configurarCheckboxesNuevaLiga();
+            input.value = '';
         }
-        
-        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        async function guardarNombreLiga() {
-            let nuevoNom = document.getElementById('editNombreLigaInput').value;
-            let { error } = await _supabase.from('ligas').update({ nombre: nuevoNom }).eq('id', ligaActivaId);
-            if(!error) {
-                cerrarModal('modalRenombrar');
-                await cargarLigas();
-            }
+        async function cargarLigas() {
+            let { data, error } = await _supabase.from('ligas').select('*').order('created_at', { ascending: true });
+            if (error) return;
+            ligasCached = data;
+            let selector = document.getElementById('ligaSelector');
+            selector.innerHTML = '';
+            
+            if(ligasCached.length === 0) { return; }
+
+            ligasCached.forEach(l => {
+                let opt = document.createElement('option');
+                opt.value = l.id; opt.textContent = l.nombre;
+                selector.appendChild(opt);
+            });
+            if(!ligaActivaId) ligaActivaId = ligasCached[ligasCached.length - 1].id;
+            selector.value = ligaActivaId;
+            await cargarPartidosDeLigaActiva();
         }
+
+        async function cargarPartidosDeLigaActiva() {
+            let { data, error } = await _supabase.from('resultados_partidos').select('*').eq('liga_id', ligaActivaId);
+            if (!error) { partidosCached = data; procesarEstadisticasYTablas(); }
+        }
+
+        function cambiarLigaActiva() { ligaActivaId = document.getElementById('ligaSelector').value; cargarPartidosDeLigaActiva(); }
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); evt.currentTarget.classList.add('active');
+        }
+        function abrirModalNuevaLiga() { document.getElementById('modalNuevaLiga').style.display = 'flex'; }
+        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
         async function crearNuevaLigaEstructura() {
             let nombre = document.getElementById('nuevaLigaNombre').value;
@@ -715,14 +593,11 @@
             if(jSeleccionados.length < 2) return alert("Seleccioná al menos 2 jugadores");
 
             let { data, error } = await _supabase.from('ligas').insert([{
-                nombre: nombre,
-                jugadores: jSeleccionados,
-                monto_individual: monto
+                nombre: nombre, jugadores: jSeleccionados, monto_individual: monto
             }]).select();
 
             if(!error) {
-                let nuevaLiga = data[0];
-                ligaActivaId = nuevaLiga.id;
+                ligaActivaId = data[0].id;
                 await generarFixtureRoundRobin(ligaActivaId, jSeleccionados, mezclar);
                 cerrarModal('modalNuevaLiga');
                 await cargarLigas();
@@ -738,211 +613,81 @@
             let partidosInserts = [];
             let contadorPartidoKey = 1;
 
-            // IDA
             for (let f = 0; f < numJugadores - 1; f++) {
                 for (let i = 0; i < numJugadores / 2; i++) {
-                    let home = list[i];
-                    let away = list[numJugadores - 1 - i];
+                    let home = list[i]; let away = list[numJugadores - 1 - i];
                     if (home !== "BYE" && away !== "BYE") {
                         partidosInserts.push({ liga_id: ligaId, partido_key: contadorPartidoKey++, fecha: f + 1, local: home, visitante: away });
                     }
                 }
                 list.splice(1, 0, list.pop());
             }
-
-            // VUELTA
             for (let f = 0; f < numJugadores - 1; f++) {
                 for (let i = 0; i < numJugadores / 2; i++) {
-                    let home = list[numJugadores - 1 - i];
-                    let away = list[i];
+                    let home = list[numJugadores - 1 - i]; let away = list[i];
                     if (home !== "BYE" && away !== "BYE") {
                         partidosInserts.push({ liga_id: ligaId, partido_key: contadorPartidoKey++, fecha: (numJugadores - 1) + f + 1, local: home, visitante: away });
                     }
                 }
                 list.splice(1, 0, list.pop());
             }
-
             await _supabase.from('resultados_partidos').insert(partidosInserts);
         }
 
         function procesarEstadisticasYTablas() {
             let ligaActual = ligasCached.find(l => l.id == ligaActivaId);
             let jugActivos = ligaActual ? ligaActual.jugadores : [];
-            
             statsGlobales = {};
-            jugActivos.forEach(j => {
-                statsGlobales[j] = { name: j, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0, derrotasGoleada: 0 };
-            });
+            jugActivos.forEach(j => { statsGlobales[j] = { name: j, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 }; });
 
             partidosCached.forEach(p => {
-                if(p.goles_local !== null && p.goles_visitante !== null) {
-                    let gl = parseInt(p.goles_local);
-                    let gv = parseInt(p.goles_visitante);
-                    
+                if(p.gl !== null && p.gv !== null) {
+                    let gl = parseInt(p.gl); let gv = parseInt(p.gv);
                     if(statsGlobales[p.local] && statsGlobales[p.visitante]) {
-                        statsGlobales[p.local].pj++;
-                        statsGlobales[p.visitante].pj++;
-                        statsGlobales[p.local].gf += gl;
-                        statsGlobales[p.local].gc += gv;
-                        statsGlobales[p.visitante].gf += gv;
-                        statsGlobales[p.visitante].gc += gl;
-
-                        let dif = gl - gv;
-                        if(gl > gv) {
-                            statsGlobales[p.local].g++;
-                            statsGlobales[p.local].pts += 3;
-                            statsGlobales[p.visitante].p++;
-                            if(dif >= 3) statsGlobales[p.visitante].derrotasGoleada++;
-                        } else if(gv > gl) {
-                            statsGlobales[p.visitante].g++;
-                            statsGlobales[p.visitante].pts += 3;
-                            statsGlobales[p.local].p++;
-                            if(Math.abs(dif) >= 3) statsGlobales[p.local].derrotasGoleada++;
-                        } else {
-                            statsGlobales[p.local].e++;
-                            statsGlobales[p.local].pts += 1;
-                            statsGlobales[p.visitante].e++;
-                            statsGlobales[p.visitante].pts += 1;
-                        }
+                        statsGlobales[p.local].pj++; statsGlobales[p.visitante].pj++;
+                        statsGlobales[p.local].gf += gl; statsGlobales[p.local].gc += gv;
+                        statsGlobales[p.visitante].gf += gv; statsGlobales[p.visitante].gc += gl;
+                        if(gl > gv) { statsGlobales[p.local].g++; statsGlobales[p.local].pts += 3; statsGlobales[p.visitante].p++; }
+                        else if(gv > gl) { statsGlobales[p.visitante].g++; statsGlobales[p.visitante].pts += 3; statsGlobales[p.local].p++; }
+                        else { statsGlobales[p.local].e++; statsGlobales[p.local].pts += 1; statsGlobales[p.visitante].e++; statsGlobales[p.visitante].pts += 1; }
                     }
                 }
             });
-
-            Object.keys(statsGlobales).forEach(j => {
-                statsGlobales[j].dg = statsGlobales[j].gf - statsGlobales[j].gc;
-            });
-
-            renderTabla();
-            renderFixture();
-            renderCopaBracket(jugActivos);
-            renderPremiosFijos(ligaActual, jugActivos);
-            renderPremiosIndividualesAuto();
-            renderPestañaPerfiles(jugActivos);
+            Object.keys(statsGlobales).forEach(j => { statsGlobales[j].dg = statsGlobales[j].gf - statsGlobales[j].gc; });
+            renderTabla(); renderFixture();
         }
 
         function renderTabla() {
-            let arr = Object.values(statsGlobales).sort((a,b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-            let tbody = document.getElementById('tabla-body');
-            tbody.innerHTML = '';
+            let arr = Object.values(statsGlobales).sort((a,b) => b.pts - a.pts || b.dg - a.dg);
+            let tbody = document.getElementById('tabla-body'); tbody.innerHTML = '';
             arr.forEach((j, i) => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="pos-num">${i+1}</span></td>
-                    <td style="font-weight:bold;">${j.name}</td>
-                    <td>${j.pj}</td>
-                    <td>${j.g}</td>
-                    <td>${j.e}</td>
-                    <td>${j.p}</td>
-                    <td>${j.gf}</td>
-                    <td>${j.gc}</td>
-                    <td>${j.dg}</td>
-                    <td class="pts-col">${j.pts}</td>
-                `;
-                tbody.appendChild(tr);
+                tbody.innerHTML += `<tr><td><span class="pos-num">${i+1}</span></td><td><b>${j.name}</b></td><td>${j.pj}</td><td>${j.g}</td><td>${j.e}</td><td>${j.p}</td><td>${j.gf}</td><td>${j.gc}</td><td>${j.dg}</td><td class="pts-col">${j.pts}</td></tr>`;
             });
         }
 
         function renderFixture() {
-            let container = document.getElementById('fixture-container');
-            container.innerHTML = '';
-
+            let container = document.getElementById('fixture-container'); container.innerHTML = '';
             if(partidosCached.length === 0) return;
-
             let maxFecha = Math.max(...partidosCached.map(p => p.fecha));
-            
             for(let f=1; f<=maxFecha; f++) {
-                let divFecha = document.createElement('div');
-                divFecha.className = 'fecha-contenedor';
-                divFecha.innerHTML = `<div class="fecha-titulo">Fecha ${f}</div>`;
-                
-                let partidosFecha = partidosCached.filter(p => p.fecha === f);
-                partidosFecha.forEach(p => {
-                    let card = document.createElement('div');
-                    card.className = `partido-card ${p.goles_local !== null ? 'jugado' : ''}`;
-                    
-                    let gl = p.goles_local !== null ? p.goles_local : '';
-                    let gv = p.goles_visitante !== null ? p.goles_visitante : '';
-                    let disabledAttr = isAdmin ? '' : 'disabled';
-
-                    card.innerHTML = `
-                        <div class="team-name team-home">${p.local}</div>
-                        <div class="score-container">
-                            <input type="number" class="score-input" id="gl_${p.id}" value="${gl}" ${disabledAttr}>
-                            <span style="color:var(--text-muted)">-</span>
-                            <input type="number" class="score-input" id="gv_${p.id}" value="${gv}" ${disabledAttr}>
-                            <button class="btn-save-partido" onclick="guardarPartidoEnNube(${p.id})">💾</button>
-                            <button class="btn-h2h" onclick="alert('Historial H2H próximamente')">H2H</button>
-                        </div>
-                        <div class="team-name team-away">${p.visitante}</div>
-                    `;
-                    divFecha.appendChild(card);
+                let div = document.createElement('div'); div.className = 'fecha-contenedor';
+                div.innerHTML = `<div class="fecha-titulo">Fecha ${f}</div>`;
+                partidosCached.filter(p => p.fecha === f).forEach(p => {
+                    let gl = p.gl !== null ? p.gl : ''; let gv = p.gv !== null ? p.gv : '';
+                    let dis = isAdmin ? '' : 'disabled';
+                    div.innerHTML += `<div class="partido-card ${p.gl !== null ? 'jugado' : ''}"><div class="team-name team-home">${p.local}</div><div class="score-container"><input type="number" class="score-input" id="gl_${p.id}" value="${gl}" ${dis}> - <input type="number" class="score-input" id="gv_${p.id}" value="${gv}" ${dis}><button class="btn-save-partido" onclick="guardarPartidoEnNube(${p.id})">💾</button></div><div class="team-name team-away">${p.visitante}</div></div>`;
                 });
-                container.appendChild(divFecha);
+                container.appendChild(div);
             }
         }
 
         async function guardarPartidoEnNube(idPartido) {
-            let gl = document.getElementById(`gl_${idPartido}`).value;
-            let gv = document.getElementById(`gv_${idPartido}`).value;
-
-            if(gl === '' || gv === '') return alert("Ingresá ambos goles");
-
-            let { error } = await _supabase.from('resultados_partidos').upsert({
-                id: idPartido,
-                liga_id: ligaActivaId,
-                goles_local: parseInt(gl),
-                goles_visitante: parseInt(gv)
-            });
-
-            if(error) {
-                alert("Error al guardar gol: " + error.message);
-            } else {
-                await cargarPartidosDeLigaActiva();
-            }
+            let glValue = document.getElementById(`gl_${idPartido}`).value;
+            let gvValue = document.getElementById(`gv_${idPartido}`).value;
+            if(glValue === '' || gvValue === '') return alert("Ingresá ambos goles");
+            let { error } = await _supabase.from('resultados_partidos').upsert({ id: idPartido, liga_id: ligaActivaId, gl: parseInt(glValue), gv: parseInt(gvValue) });
+            if(error) alert("Error: " + error.message); else await cargarPartidosDeLigaActiva();
         }
-
-        // Funciones complementarias para evitar errores de renderizado vacío
-        function renderCopaBracket(jugadores) {
-            document.getElementById('bracket-container').innerHTML = `<p style="color:var(--text-muted)">Soporte de llaves dinámicas activo para ${jugadores.length} jugadores.</p>`;
-        }
-        function renderPremiosFijos(liga, jugadores) {
-            let total = (liga ? liga.monto_individual : 1000) * jugadores.length;
-            document.getElementById('premios-dinamicos-container').innerHTML = `
-                <div class="stat-box">
-                    <div class="stat-label">Pozo Total Acumulado</div>
-                    <div class="stat-value">$${total} ARS</div>
-                </div>`;
-        }
-        function renderPremiosIndividualesAuto() {
-            document.getElementById('premios-ind-grid').innerHTML = `
-                <div class="stat-box"><div class="stat-label">🏆 Goleador</div><div class="stat-value" style="font-size:1.2rem;">Calculando...</div></div>
-                <div class="stat-box"><div class="stat-label">🛡️ Valla Menos Vencida</div><div class="stat-value" style="font-size:1.2rem;">Calculando...</div></div>`;
-        }
-        function renderPestañaPerfiles(jugadores) {
-            let grid = document.getElementById('perfiles-grid-select');
-            grid.innerHTML = '';
-            jugadores.forEach(j => {
-                let btn = document.createElement('div');
-                btn.className = `perfil-card-btn ${jugadorPerfilSeleccionado === j ? 'active' : ''}`;
-                btn.innerHTML = `<div class="perfil-avatar">👤</div><div>${j}</div>`;
-                btn.onclick = () => {
-                    jugadorPerfilSeleccionado = j;
-                    renderPestañaPerfiles(jugadores);
-                };
-                grid.appendChild(btn);
-            });
-            let det = document.getElementById('perfil-detalle-container');
-            let s = statsGlobales[jugadorPerfilSeleccionado] || {pj:0, g:0, e:0, p:0, gf:0, gc:0};
-            det.innerHTML = `
-                <h3 style="color:var(--primary-neon)">Estadísticas de ${jugadorPerfilSeleccionado}</h3>
-                <div class="stats-grid">
-                    <div class="stat-box"><div class="stat-label">Partidos Jugados</div><div class="stat-value">${s.pj}</div></div>
-                    <div class="stat-box"><div class="stat-label">Goles a Favor</div><div class="stat-value">${s.gf}</div></div>
-                    <div class="stat-box"><div class="stat-label">Goles en Contra</div><div class="stat-value">${s.gc}</div></div>
-                </div>`;
-        }
-
-        // Iniciar la app al cargar
         window.onload = init;
     </script>
 </body>
