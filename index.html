@@ -1,44 +1,15 @@
+HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>DEBUG LIGA</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { background: #0b0c0d; color: #fff; font-family: sans-serif; padding: 20px; }
-        .error-box { border: 2px solid red; padding: 20px; color: #ff4d4d; margin-bottom: 20px; }
-    </style>
+    <title>PRUEBA DE CARGA</title>
 </head>
 <body>
-    <div id="debug-msg">Cargando...</div>
-    <div id="contenido" style="display:none;">
-        <h1>Todo OK</h1>
-    </div>
-
+    <h1 style="color: yellow;">¡EL CÓDIGO SÍ ESTÁ CARGANDO!</h1>
     <script>
-        const SUPABASE_URL = "https://zmzztkbndsuasfiuhepw.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_pijw_DnJiHSxvAvAc-HLFQ_G5Y5h3AI";
-        
-        async function testConexion() {
-            const debug = document.getElementById('debug-msg');
-            try {
-                const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                debug.innerHTML = "Intentando conectar a Supabase...";
-                
-                const { data, error } = await client.from('ligas').select('*');
-                
-                if (error) {
-                    debug.innerHTML = `<div class="error-box">ERROR DE SUPABASE: ${error.message}</div>`;
-                } else {
-                    debug.innerHTML = "¡CONEXIÓN EXITOSA! Ligas encontradas: " + data.length;
-                    document.getElementById('contenido').style.display = 'block';
-                    console.log("Datos:", data);
-                }
-            } catch (e) {
-                debug.innerHTML = `<div class="error-box">ERROR CRÍTICO: ${e.toString()}</div>`;
-            }
-        }
-        testConexion();
+        console.log("El script se está ejecutando correctamente.");
+        alert("Si ves este cartel, el código funciona.");
     </script>
 </body>
 </html>
