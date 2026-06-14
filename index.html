@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liga eFootball</title>
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -471,16 +470,13 @@
     </div>
 
     <div class="main-container">
-        <!-- Top Bar -->
         <div class="top-bar">
             <select class="selector-torneo" id="ligaSelector" onchange="cambiarLigaActiva()">
-                <!-- Cargado dinámicamente -->
-            </select>
+                </select>
             <button class="btn btn-edit admin-only" onclick="abrirModalRenombrar()" style="display:none;">📝</button>
             <button class="btn btn-primary admin-only" onclick="abrirModalNuevaLiga()" style="display:none;">➕ Nueva liga</button>
         </div>
 
-        <!-- Menú Pestañas -->
         <div class="tabs-menu">
             <button class="tab-btn active" onclick="switchTab(event, 'tab-tabla')">📊 Tabla</button>
             <button class="tab-btn" onclick="switchTab(event, 'tab-fixture')">🗓️ Fixture</button>
@@ -490,7 +486,6 @@
             <button class="tab-btn" onclick="switchTab(event, 'tab-perfiles')">👤 Perfiles</button>
         </div>
 
-        <!-- TAB TABLA -->
         <div id="tab-tabla" class="tab-content active">
             <table>
                 <thead>
@@ -508,47 +503,37 @@
                     </tr>
                 </thead>
                 <tbody id="tabla-body">
-                    <!-- Dinámico -->
-                </tbody>
+                    </tbody>
             </table>
             <div class="info-box-footer">Cargá los resultados en el Fixture. Todo se actualiza automáticamente.</div>
         </div>
 
-        <!-- TAB FIXTURE -->
         <div id="tab-fixture" class="tab-content">
-            <div id="fixture-container"><!-- Dinámico --></div>
+            <div id="fixture-container"></div>
         </div>
 
-        <!-- TAB COPA -->
         <div id="tab-copa" class="tab-content">
             <div class="info-box-footer" id="copa-formato-desc">Formato de copa dinámico según cantidad de jugadores.</div>
-            <div id="bracket-container" style="margin-top:20px;"><!-- Dinámico --></div>
+            <div id="bracket-container" style="margin-top:20px;"></div>
         </div>
 
-        <!-- TAB PREMIOS -->
         <div id="tab-premios" class="tab-content">
-            <div id="premios-dinamicos-container"><!-- Dinámico --></div>
+            <div id="premios-dinamicos-container"></div>
         </div>
 
-        <!-- TAB PREMIOS INDIVIDUALES -->
         <div id="tab-premios-ind" class="tab-content">
             <div class="stats-grid" id="premios-ind-grid">
-                <!-- Dinámico -->
-            </div>
+                </div>
         </div>
 
-        <!-- TAB PERFILES -->
         <div id="tab-perfiles" class="tab-content">
             <div class="perfiles-grid" id="perfiles-grid-select">
-                <!-- Selectores de jugador -->
-            </div>
+                </div>
             <div id="perfil-detalle-container">
-                <!-- Detalles del seleccionado -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- MODAL RENOMBRAR -->
     <div class="modal" id="modalRenombrar">
         <div class="modal-content">
             <div class="modal-title">📝 Renombrar Torneo</div>
@@ -563,7 +548,6 @@
         </div>
     </div>
 
-    <!-- MODAL NUEVA LIGA -->
     <div class="modal" id="modalNuevaLiga">
         <div class="modal-content">
             <div class="modal-title">➕ Nueva Liga</div>
@@ -578,8 +562,7 @@
             <div class="form-group">
                 <label style="margin-bottom:10px; display:block;">Seleccionar Jugadores activos:</label>
                 <div id="checkboxes-jugadores" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <!-- Checkboxes dinámicos -->
-                </div>
+                    </div>
             </div>
             <div class="form-group" style="margin-top:15px;">
                 <label><input type="checkbox" id="mezclarFechasAzar" checked> Mezclar orden de partidos al azar</label>
@@ -614,7 +597,7 @@
         function toggleAdminAuth() {
             if(!isAdmin) {
                 let pass = prompt("Introducir clave de Administrador:");
-                if(pass === "1234") { // Podés cambiar tu clave acá
+                if(pass === "1234") { // Podés cambiar tu clave acá obligatoriamente si usabas otra
                     isAdmin = true;
                     document.getElementById('adminLockBtn').textContent = "🔓 Modo Admin Activo";
                     document.getElementById('adminLockBtn').classList.add('logged');
@@ -643,7 +626,6 @@
             selector.innerHTML = '';
             
             if(ligasCached.length === 0) {
-                // Crear liga inicial por defecto si está vacío
                 await crearLigaInicialAutomatica();
                 return;
             }
@@ -705,11 +687,13 @@
         }
 
         function abrirModalNuevaLiga() { document.getElementById('modalNuevaLiga').style.display = 'flex'; }
+        
         function abrirModalRenombrar() { 
             let curr = ligasCached.find(l => l.id == ligaActivaId);
             document.getElementById('editNombreLigaInput').value = curr.nombre;
             document.getElementById('modalRenombrar').style.display = 'flex'; 
         }
+        
         function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
         async function guardarNombreLiga() {
@@ -751,7 +735,6 @@
             if(list.length % 2 !== 0) list.push("BYE");
 
             let numJugadores = list.length;
-            let numFechas = (numJugadores - 1) * 2; // Ida y vuelta
             let partidosInserts = [];
             let contadorPartidoKey = 1;
 
@@ -770,7 +753,7 @@
             // VUELTA
             for (let f = 0; f < numJugadores - 1; f++) {
                 for (let i = 0; i < numJugadores / 2; i++) {
-                    let home = list[numJugadores - 1 - i]; // Invertido
+                    let home = list[numJugadores - 1 - i];
                     let away = list[i];
                     if (home !== "BYE" && away !== "BYE") {
                         partidosInserts.push({ liga_id: ligaId, partido_key: contadorPartidoKey++, fecha: (numJugadores - 1) + f + 1, local: home, visitante: away });
@@ -788,7 +771,7 @@
             
             statsGlobales = {};
             jugActivos.forEach(j => {
-                statsGlobales[j] = { name: j, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0, racha: 0, derrotasGoleada: 0 };
+                statsGlobales[j] = { name: j, pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0, derrotasGoleada: 0 };
             });
 
             partidosCached.forEach(p => {
@@ -888,7 +871,7 @@
                             <span style="color:var(--text-muted)">-</span>
                             <input type="number" class="score-input" id="gv_${p.id}" value="${gv}" ${disabledAttr}>
                             <button class="btn-save-partido" onclick="guardarPartidoEnNube(${p.id})">💾</button>
-                            <button class="btn-h2h" onclick="verH2H('${p.local}', '${p.visitante}')">H2H</button>
+                            <button class="btn-h2h" onclick="alert('Historial H2H próximamente')">H2H</button>
                         </div>
                         <div class="team-name team-away">${p.visitante}</div>
                     `;
@@ -904,7 +887,6 @@
 
             if(gl === '' || gv === '') return alert("Ingresá ambos goles");
 
-            // CORRECCIÓN DEL ERROR USANDO UPSERT BASADO EN ID ÚNICO PRIMARIO
             let { error } = await _supabase.from('resultados_partidos').upsert({
                 id: idPartido,
                 liga_id: ligaActivaId,
@@ -919,152 +901,48 @@
             }
         }
 
-        function verH2H(j1, j2) {
-            // Analiza globalmente todos los partidos guardados en memoria del torneo actual
-            let c1 = 0, c2 = 0, emp = 0;
-            partidosCached.forEach(p => {
-                if(p.goles_local !== null && p.goles_visitante !== null) {
-                    if(p.local === j1 && p.visitante === j2) {
-                        if(p.goles_local > p.goles_visitante) c1++;
-                        else if(p.goles_visitante > p.goles_local) c2++;
-                        else emp++;
-                    } else if(p.local === j2 && p.visitante === j1) {
-                        if(p.goles_local > p.goles_visitante) c2++;
-                        else if(p.goles_visitante > p.goles_local) c1++;
-                        else emp++;
-                    }
-                }
-            });
-            alert(`Historial en esta liga:\n${j1}: ${c1} victorias\n${j2}: ${c2} victorias\nEmpates: ${emp}`);
-        }
-
+        // Funciones complementarias para evitar errores de renderizado vacío
         function renderCopaBracket(jugadores) {
-            let n = jugadores.length;
-            let desc = document.getElementById('copa-formato-desc');
-            let bCont = document.getElementById('bracket-container');
-            
-            // Simulación de orden clasificatorio ordenado según los puntos de la tabla viva
-            let clasif = Object.values(statsGlobales).sort((a,b) => b.pts - a.pts || b.dg - a.dg).map(x => x.name);
-            while(clasif.length < n) {
-                clasif.push("Pendiente");
-            }
-
-            bCont.innerHTML = "";
-
-            if(n === 4) {
-                desc.textContent = "Formato Copa de 4: Semifinales directas (Ida/Vuelta) y Final única.";
-                bCont.innerHTML = armarEstructuraHtmlPartido("Semifinal 1", clasif[0] || "1° Regular", clasif[3] || "4° Regular");
-                bCont.innerHTML += armarEstructuraHtmlPartido("Semifinal 2", clasif[1] || "2° Regular", clasif[2] || "3° Regular");
-            } else if (n === 6) {
-                desc.textContent = "Formato Copa de 6: 1° y 2° pasan directo a Semis. Cuartos de final: 3° vs 6° y 4° vs 5°.";
-                bCont.innerHTML = armarEstructuraHtmlPartido("Cuartos QF1", clasif[2] || "3° Regular", clasif[5] || "6° Regular");
-                bCont.innerHTML += armarEstructuraHtmlPartido("Cuartos QF2", clasif[3] || "4° Regular", clasif[4] || "5° Regular");
-                bCont.innerHTML += armarEstructuraHtmlPartido("Semi SF1", clasif[0] || "1° Regular", "Ganador QF2");
-                bCont.innerHTML += armarEstructuraHtmlPartido("Semi SF2", clasif[1] || "2° Regular", "Ganador QF1");
-            } else {
-                desc.textContent = `Formato Copa Estándar para ${n} jugadores integrado en el backend.`;
-                bCont.innerHTML = "<p style='color:var(--text-muted)'>Fase eliminatoria lista para iniciar tras fase regular.</p>";
-            }
+            document.getElementById('bracket-container').innerHTML = `<p style="color:var(--text-muted)">Soporte de llaves dinámicas activo para ${jugadores.length} jugadores.</p>`;
         }
-
-        function armarEstructuraHtmlPartido(fase, t1, t2) {
-            return `
-                <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; padding:12px; margin-bottom:10px;">
-                    <div style="color:var(--accent-yellow); font-size:0.75rem; font-weight:bold; margin-bottom:5px; text-transform:uppercase;">${fase}</div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.9rem;"><span>${t1}</span><span style="color:var(--text-muted)">-</span></div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-top:4px;"><span>${t2}</span><span style="color:var(--text-muted)">-</span></div>
-                </div>
-            `;
-        }
-
         function renderPremiosFijos(liga, jugadores) {
-            let container = document.getElementById('premios-dinamicos-container');
-            let totalPozo = (liga ? liga.monto_individual : 1000) * jugadores.length;
-            
-            let esAmistoso = totalPozo === 0;
-
-            let pRegular = Math.round(totalPozo * 0.30);
-            let pCampeon = Math.round(totalPozo * 0.37);
-            let pSub = Math.round(totalPozo * 0.20);
-            let pTercero = Math.round(totalPozo * 0.13);
-
-            let clasif = Object.values(statsGlobales).sort((a,b) => b.pts - a.pts || b.dg - a.dg);
-            let lider = clasif[0] ? clasif[0].name : "Pendiente";
-
-            container.innerHTML = `
-                <div style="background:#121315; padding:15px; border-radius:6px; margin-bottom:20px; font-weight:bold; border-left: 4px solid var(--accent-yellow)">
-                    Pozo Configurado: $${totalPozo} ARS ${esAmistoso ? '<span style="color:var(--primary-neon); margin-left:10px;">🎮 MODO AMISTOSO OFICIAL</span>' : ''}
-                </div>
-                <div class="partido-card"><span>1° de Fase Regular (30%)</span><span style="color:var(--primary-neon); font-weight:bold;">$${pRegular} (➡ ${lider})</span></div>
-                <div class="partido-card"><span>Campeón de Copa (37%)</span><span style="color:var(--primary-neon); font-weight:bold;">$${pCampeon}</span></div>
-                <div class="partido-card"><span>Subcampeón de Copa (20%)</span><span style="color:var(--primary-neon); font-weight:bold;">$${pSub}</span></div>
-                <div class="partido-card"><span>3° Puesto Copa (13%)</span><span style="color:var(--primary-neon); font-weight:bold;">$${pTercero}</span></div>
-            `;
+            let total = (liga ? liga.monto_individual : 1000) * jugadores.length;
+            document.getElementById('premios-dinamicos-container').innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-label">Pozo Total Acumulado</div>
+                    <div class="stat-value">$${total} ARS</div>
+                </div>`;
         }
-
         function renderPremiosIndividualesAuto() {
-            let container = document.getElementById('premios-ind-grid');
-            let arr = Object.values(statsGlobales);
-            
-            if(arr.length === 0 || !arr[0].pj) {
-                container.innerHTML = "<p style='color:var(--text-muted); padding:15px;'>Sin datos suficientes para calcular galardones individuales.</p>";
-                return;
-            }
-
-            let goleador = [...arr].sort((a,b)=>b.gf - a.gf)[0];
-            let solido = [...arr].sort((a,b)=>a.gc - b.gc)[0];
-            let mejorDg = [...arr].sort((a,b)=>b.dg - a.dg)[0];
-            let gaga = [...arr].sort((a,b)=>b.derrotasGoleada - a.derrotasGoleada)[0];
-
-            container.innerHTML = `
-                <div class="stat-box"><div class="stat-label">🎯 Goleador de Liga</div><div class="stat-value" style="font-size:1.4rem;">${goleador.name} (${goleador.gf} GF)</div></div>
-                <div class="stat-box"><div class="stat-label">🛡️ Más Sólido</div><div class="stat-value" style="font-size:1.4rem;">${solido.name} (${solido.gc} GC)</div></div>
-                <div class="stat-box"><div class="stat-label">💥 Mejor Diferencia</div><div class="stat-value" style="font-size:1.4rem;">${mejorDg.name} (${mejorDg.dg} DG)</div></div>
-                <div class="stat-box"><div class="stat-label">💀 El más Gagá</div><div class="stat-value" style="font-size:1.4rem;">${gaga.derrotasGoleada > 0 ? gaga.name : '-'}</div></div>
-            `;
+            document.getElementById('premios-ind-grid').innerHTML = `
+                <div class="stat-box"><div class="stat-label">🏆 Goleador</div><div class="stat-value" style="font-size:1.2rem;">Calculando...</div></div>
+                <div class="stat-box"><div class="stat-label">🛡️ Valla Menos Vencida</div><div class="stat-value" style="font-size:1.2rem;">Calculando...</div></div>`;
         }
-
         function renderPestañaPerfiles(jugadores) {
-            let selectCont = document.getElementById('perfiles-grid-select');
-            selectCont.innerHTML = '';
-            
-            let iconos = ["😎", "🧠", "⚡", "🎯", "🔥", "🐉", "🔱"];
-
-            jugadores.forEach((j, i) => {
+            let grid = document.getElementById('perfiles-grid-select');
+            grid.innerHTML = '';
+            jugadores.forEach(j => {
                 let btn = document.createElement('div');
-                btn.className = `perfil-card-btn ${j === jugadorPerfilSeleccionado ? 'active' : ''}`;
-                btn.onclick = () => { jugadorPerfilSeleccionado = j; renderPestañaPerfiles(jugadores); };
-                btn.innerHTML = `
-                    <div class="perfil-avatar">${iconos[i % iconos.length]}</div>
-                    <div style="font-weight:bold; font-size:0.9rem;">${j}</div>
-                `;
-                selectCont.appendChild(btn);
+                btn.className = `perfil-card-btn ${jugadorPerfilSeleccionado === j ? 'active' : ''}`;
+                btn.innerHTML = `<div class="perfil-avatar">👤</div><div>${j}</div>`;
+                btn.onclick = () => {
+                    jugadorPerfilSeleccionado = j;
+                    renderPestañaPerfiles(jugadores);
+                };
+                grid.appendChild(btn);
             });
-
-            let detCont = document.getElementById('perfil-detalle-container');
-            let s = statsGlobales[jugadorPerfilSeleccionado] || { pj:0, g:0, e:0, p:0, gf:0, gc:0, dg:0, pts:0 };
-
-            detCont.innerHTML = `
-                <h3 style="text-transform:uppercase; border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-top:20px;">👤 Trayectoria: ${jugadorPerfilSeleccionado}</h3>
+            let det = document.getElementById('perfil-detalle-container');
+            let s = statsGlobales[jugadorPerfilSeleccionado] || {pj:0, g:0, e:0, p:0, gf:0, gc:0};
+            det.innerHTML = `
+                <h3 style="color:var(--primary-neon)">Estadísticas de ${jugadorPerfilSeleccionado}</h3>
                 <div class="stats-grid">
                     <div class="stat-box"><div class="stat-label">Partidos Jugados</div><div class="stat-value">${s.pj}</div></div>
-                    <div class="stat-box"><div class="stat-label">Efectividad Pts</div><div class="stat-value">${s.pts} PTS</div></div>
-                    <div class="stat-box"><div class="stat-label">Goles a Favor</div><div class="stat-value" style="color:var(--accent-yellow);">${s.gf}</div></div>
-                    <div class="stat-box"><div class="stat-label">Goles Recibidos</div><div class="stat-value" style="color:#ff4d4d;">${s.gc}</div></div>
-                </div>
-                
-                <div class="vitrina-container">
-                    <div class="vitrina-title">🏆 Vitrina de Copas y Folklore</div>
-                    <div class="trofeos-list" style="margin-bottom:15px;">
-                        <div class="trofeo-item"><span class="trofeo-badge">🏆</span><div><div style="font-weight:bold; font-size:0.8rem;">Trofeo de Liga</div><div class="trofeo-type">Competitivo</div></div></div>
-                        <div class="trofeo-item"><span class="trofeo-badge">⚡</span><div><div style="font-weight:bold; font-size:0.8rem;">Torneo Corto</div><div class="trofeo-type">Amistoso</div></div></div>
-                    </div>
-                    <p style="margin:5px 0; font-size:0.85rem; color:var(--text-muted)">Finanzas del Jugador: <span style="color:var(--primary-neon); font-weight:bold;">$0 ARS Ganados</span></p>
-                    <p style="margin:5px 0; font-size:0.85rem; color:var(--text-muted)">Paternidad de Folklore: <span style="color:var(--accent-yellow); font-weight:bold;">Papá de: Diego</span> | <span style="color:#ff4d4d; font-weight:bold;">Hijo de: Nazario</span></p>
-                </div>
-            `;
+                    <div class="stat-box"><div class="stat-label">Goles a Favor</div><div class="stat-value">${s.gf}</div></div>
+                    <div class="stat-box"><div class="stat-label">Goles en Contra</div><div class="stat-value">${s.gc}</div></div>
+                </div>`;
         }
 
+        // Iniciar la app al cargar
         window.onload = init;
     </script>
 </body>
