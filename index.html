@@ -2,137 +2,43 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liga eFootball</title>
+    <title>DEBUG LIGA</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0b0c0d; --card-bg: #111315; --input-bg: #1f2226;
-            --primary-neon: #00ff87; --accent-yellow: #ffb703;
-            --text-main: #ffffff; --text-muted: #8a8d91;
-            --border-color: #222529; --danger-color: #ff4d4d;
-        }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Montserrat', sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .admin-footer-trigger { margin-top: 40px; background: none; border: none; color: #222; cursor: pointer; font-size: 0.8rem; }
-        .header-container { text-align: center; margin-bottom: 20px; width: 100%; max-width: 900px; }
-        .header-container h1 { font-size: 2.8rem; text-transform: uppercase; margin: 0; font-weight: 900; }
-        .header-container h1 span { color: var(--primary-neon); }
-        .description-sub { color: var(--text-muted); font-size: 0.95rem; margin-top: 8px; border: none; background: transparent; text-align: center; width: 100%; }
-        .main-container { width: 100%; max-width: 900px; }
-        .top-bar { display: flex; align-items: center; margin-bottom: 20px; gap: 10px; }
-        .selector-torneo { width: 100%; background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn { background-color: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-primary { background-color: var(--primary-neon); color: #000; border: none; }
-        .btn-edit { background-color: #24282c; color: var(--accent-yellow); border: 1px solid var(--border-color); }
-        .tabs-menu { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; width: 100%; padding-bottom: 5px; }
-        .tab-btn { background-color: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
-        .tab-btn.active { background-color: var(--primary-neon); color: #000; border-color: var(--primary-neon); }
-        .tab-content { display: none; width: 100%; }
-        .tab-content.active { display: block; }
-        table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); border-radius: 8px; overflow: hidden; }
-        th { background-color: #0f1112; color: var(--text-muted); padding: 12px; font-size: 0.75rem; text-transform: uppercase; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        body { background: #0b0c0d; color: #fff; font-family: sans-serif; padding: 20px; }
+        .error-box { border: 2px solid red; padding: 20px; color: #ff4d4d; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-
-    <div class="header-container">
-        <h1>Liga <span>Efootball</span></h1>
-        <input type="text" id="ligaDescripcionInput" class="description-sub" readonly onblur="guardarDescripcionNube()">
-    </div>
-
-    <div class="main-container">
-        <div class="top-bar">
-            <select class="selector-torneo" id="ligaSelector" onchange="cambiarLigaActiva()"></select>
-            <button class="btn btn-edit admin-only" id="btnEditarLigaNombre" style="display:none;" onclick="renombrarLigaActual()">✏️</button>
-            <button class="btn btn-primary admin-only" id="btnNuevaLiga" style="display:none;" onclick="abrirModalNuevaLiga()">➕ Nueva</button>
-        </div>
-
-        <div class="tabs-menu">
-            <button class="tab-btn active" onclick="switchTab(event, 'tab-tabla')">📊 TABLA</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tab-fixture')">🗓️ FIXTURE</button>
-        </div>
-
-        <div id="tab-tabla" class="tab-content active">
-            <table>
-                <thead><tr><th>Pos</th><th>Jugador</th><th>PJ</th><th>Pts</th></tr></thead>
-                <tbody id="tabla-body"></tbody>
-            </table>
-        </div>
-        <div id="tab-fixture" class="tab-content"><div id="fixture-container"></div></div>
+    <div id="debug-msg">Cargando...</div>
+    <div id="contenido" style="display:none;">
+        <h1>Todo OK</h1>
     </div>
 
     <script>
         const SUPABASE_URL = "https://zmzztkbndsuasfiuhepw.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_pijw_DnJiHSxvAvAc-HLFQ_G5Y5h3AI";
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let isAdmin = false;
-        let ligasCached = [];
-        let ligaActivaId = null;
-
-        async function init() {
+        
+        async function testConexion() {
+            const debug = document.getElementById('debug-msg');
             try {
-                await cargarLigasDeNube();
-            } catch (err) {
-                console.error("Error inicial:", err);
-            }
-        }
-
-        async function cargarLigasDeNube() {
-            const { data: lg, error } = await _supabase.from('ligas').select('*').order('id', { ascending: true });
-            if (error || !lg || lg.length === 0) return;
-
-            ligasCached = lg;
-            const sel = document.getElementById('ligaSelector');
-            sel.innerHTML = lg.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
-            
-            ligaActivaId = lg[lg.length - 1].id;
-            sel.value = ligaActivaId;
-            cambiarLigaActiva();
-        }
-
-        async function cambiarLigaActiva() {
-            ligaActivaId = document.getElementById('ligaSelector').value;
-            const { data: partidos } = await _supabase.from('resultados_partidos').select('*').eq('liga_id', ligaActivaId);
-            renderTabla(partidos || []);
-        }
-
-        function renderTabla(partidos) {
-            const stats = {};
-            partidos.forEach(p => {
-                if (!stats[p.local]) stats[p.local] = { pts: 0, pj: 0 };
-                if (!stats[p.visitante]) stats[p.visitante] = { pts: 0, pj: 0 };
-                if (p.gl !== null && p.gv !== null) {
-                    stats[p.local].pj++; stats[p.visitante].pj++;
-                    if (p.gl > p.gv) stats[p.local].pts += 3;
-                    else if (p.gv > p.gl) stats[p.visitante].pts += 3;
-                    else { stats[p.local].pts++; stats[p.visitante].pts++; }
+                const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                debug.innerHTML = "Intentando conectar a Supabase...";
+                
+                const { data, error } = await client.from('ligas').select('*');
+                
+                if (error) {
+                    debug.innerHTML = `<div class="error-box">ERROR DE SUPABASE: ${error.message}</div>`;
+                } else {
+                    debug.innerHTML = "¡CONEXIÓN EXITOSA! Ligas encontradas: " + data.length;
+                    document.getElementById('contenido').style.display = 'block';
+                    console.log("Datos:", data);
                 }
-            });
-            const tbody = document.getElementById('tabla-body');
-            tbody.innerHTML = Object.entries(stats).sort((a,b) => b[1].pts - a[1].pts).map(([name, s], i) => 
-                `<tr><td>${i+1}</td><td>${name}</td><td>${s.pj}</td><td>${s.pts}</td></tr>`
-            ).join('');
-        }
-
-        function switchTab(evt, tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        }
-
-        function pedirAccesoAdmin() {
-            if(prompt("Clave:") === "1234") {
-                isAdmin = true;
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'inline-flex');
+            } catch (e) {
+                debug.innerHTML = `<div class="error-box">ERROR CRÍTICO: ${e.toString()}</div>`;
             }
         }
-
-        init();
+        testConexion();
     </script>
-    <button class="admin-footer-trigger" onclick="pedirAccesoAdmin()">.</button>
 </body>
 </html>
