@@ -508,6 +508,7 @@ function renderAdminPanel(){
         ${liga?.terminada?'✅ Reabrir liga':'🏁 Marcar liga como terminada'}
       </button>
       <button class="btn" style="width:100%;margin-bottom:8px;" onclick="abrirGestionarPins()">🔑 Gestionar PINs de predicciones</button>
+      <button class="btn" style="width:100%;margin-bottom:8px;" onclick="resetearTrofeos()">🔧 Resetear y recalcular trofeos</button>
       <button class="btn bw" style="width:100%;margin-bottom:8px;" onclick="setAdmin(false)">🔓 Cerrar sesión</button>
       <button class="btn bw" style="width:100%;" onclick="abrirBorrar()">🗑️ Borrar liga actual</button>
     </div>`;
@@ -763,7 +764,11 @@ function renderFixture(){
           <input type="number" min="0" max="99" class="sc" id="${key}_v" placeholder="-" value="${res.gv}" ${d} oninput="preG('${key}','${p.L}','${p.V}')">
         </div>
         <span class="tv">${p.V}</span>
-      </div>${predHtml}${jugado?renderFotosPartido(key,isAdmin):''}`;
+      </div>
+      ${jugado&&isAdmin?`<div style="text-align:right;margin:-2px 0 6px;">
+        <button onclick="notifManualPartido('${p.L}','${p.V}','${res.gl}','${res.gv}','liga')" style="background:none;border:1px solid var(--gb);color:var(--gt);padding:3px 8px;border-radius:4px;font-size:.65rem;cursor:pointer;">🔔 Enviar notif</button>
+      </div>`:''}
+      ${predHtml}${jugado?renderFotosPartido(key,isAdmin):''}`;
     }).join('');
     return`<div class="jorn">
       <div class="jt" onclick="toggleH2HFecha(${jorn.f})">FECHA ${jorn.f}<span class="jt-toggle" id="tog_${jorn.f}">▼ ver H2H</span></div>
@@ -785,7 +790,15 @@ function renderFixture(){
   }
 }
 
-const TT={};
+function notifManualPartido(local,visitante,gl,gv,tipo){
+  const titulo=generarTituloPartido(local,visitante,gl,gv);
+  let msg=`${liga.nombre} • ${local} ${gl}-${gv} ${visitante}`;
+  if(tipo==='copa')msg=`[COPA] ${liga.nombre} • ${local} ${gl}-${gv} ${visitante}`;
+  enviarNotificacion(titulo,msg);
+  toast('🔔 Notificación enviada');
+}
+
+
 function preG(k,local,visitante){clearTimeout(TT[k]);TT[k]=setTimeout(()=>gP(k,local,visitante),600);}
 async function gP(k,local,visitante){
   if(!isAdmin||liga.terminada)return;
@@ -961,6 +974,10 @@ function htmlIV(mid,nL,nV,forceDisabled){
   const d=(forceDisabled||!isAdmin)?'disabled':'';
   const g=gGlobal(mid,false);
   const esEmpate=g&&g.L===g.V;
+  const ganador=g&&!esEmpate?(g.L>g.V?nL:nV):null;
+  const notifBtn=isAdmin&&g&&!forceDisabled?`<div style="text-align:right;margin-top:4px;">
+    <button onclick="notifManualPartido('${nL}','${nV}','${g?g.L:0}','${g?g.V:0}','copa')" style="background:none;border:1px solid var(--gb);color:var(--gt);padding:3px 8px;border-radius:4px;font-size:.65rem;cursor:pointer;">🔔 Enviar notif copa</button>
+  </div>`:'';
   const empSel=esEmpate&&isAdmin?`<div style="margin-top:4px;">
     <div style="font-size:.7rem;color:var(--am);margin-bottom:3px;">⚠️ Empate — elegí quien pasa:</div>
     <select class="empate-sel" id="${mid}_emp" onchange="gCopa()">
@@ -979,12 +996,16 @@ function htmlIV(mid,nL,nV,forceDisabled){
     <div class="bt"><span class="bn">${nL}</span><input type="number" min="0" max="99" class="bs" id="${mid}_vl" placeholder="-" ${d} oninput="gCopa()"></div>
   </div>
   ${empSel}
+  ${notifBtn}
   <div class="br" id="${mid}_r"></div>`;
 }
 function htmlU(mid,nL,nV,forceDisabled){
   const d=(forceDisabled||!isAdmin)?'disabled':'';
   const g=gGlobal(mid,true);
   const esEmpate=g&&g.L===g.V;
+  const notifBtn=isAdmin&&g&&!forceDisabled?`<div style="text-align:right;margin-top:4px;">
+    <button onclick="notifManualPartido('${nL}','${nV}','${g?g.L:0}','${g?g.V:0}','copa')" style="background:none;border:1px solid var(--gb);color:var(--gt);padding:3px 8px;border-radius:4px;font-size:.65rem;cursor:pointer;">🔔 Enviar notif final</button>
+  </div>`:'';
   const empSel=esEmpate&&isAdmin?`<div style="margin-top:4px;">
     <div style="font-size:.7rem;color:var(--am);margin-bottom:3px;">⚠️ Empate — elegí quien pasa:</div>
     <select class="empate-sel" id="${mid}_emp" onchange="gCopa()">
@@ -998,6 +1019,7 @@ function htmlU(mid,nL,nV,forceDisabled){
     <div class="bt"><span class="bn">${nV}</span><input type="number" min="0" max="99" class="bs" id="${mid}_iv" placeholder="-" ${d} oninput="gCopa()"></div>
   </div>
   ${empSel}
+  ${notifBtn}
   <div class="br" id="${mid}_r"></div>`;
 }
 function txtR(mid,nL,nV,solo){
@@ -1200,8 +1222,31 @@ function getWins(order){
 }
 
 /* ============================================================
-   TROFEOS
+   TROFEOS — resetear y recalcular desde resultados reales
    ============================================================ */
+async function resetearTrofeos(){
+  if(!isAdmin)return;
+  aModal('🔧 RESETEAR TROFEOS',`<p>Esto va a borrar los trofeos actuales de esta liga y los va a recalcular desde los resultados reales. ¿Seguro?</p>`,async()=>{
+    liga.trofeos=[];
+    const s=calcTabla(),order=s.map(([n])=>n);
+    const wins=getWins(order);
+    const tipo=liga.pozo.amistoso?'amistoso':'competitivo';
+    const total=liga.pozo.total;
+    const nuevos=[];
+    // Trofeos copa
+    if(wins.campeon)nuevos.push({jugador:wins.campeon,tipo_premio:'campeon_copa',tipo,ligaNombre:liga.nombre,ligaId:liga.id,dinero:Math.round(total*PCTG.campeon)});
+    if(wins.subcamp)nuevos.push({jugador:wins.subcamp,tipo_premio:'subcamp_copa',tipo,ligaNombre:liga.nombre,ligaId:liga.id,dinero:Math.round(total*PCTG.subcamp)});
+    if(wins.tercero)nuevos.push({jugador:wins.tercero,tipo_premio:'tercero_copa',tipo,ligaNombre:liga.nombre,ligaId:liga.id,dinero:Math.round(total*PCTG.tercero)});
+    // Trofeo liga 1 — solo si la liga está terminada
+    if(liga.terminada&&order[0])nuevos.push({jugador:order[0],tipo_premio:'liga1',tipo,ligaNombre:liga.nombre,ligaId:liga.id,dinero:Math.round(total*PCTG.liga1)});
+    liga.trofeos=nuevos;
+    await guardarEnSupabase();
+    cModal();
+    renderTabla();
+    toast('✓ Trofeos recalculados correctamente');
+  });
+}
+
 async function guardarTrofeosCopa(wins,order){
   if(!liga)return;
   const trofeos=liga.trofeos||[];
